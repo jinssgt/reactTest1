@@ -1,0 +1,126 @@
+.searchBtn {
+    width: 50px;
+    height: 32px;
+    background: #41b3f9;
+    color: white;
+    border:none;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .searchBtn:hover {
+    background: #87c4e6;
+  }
+
+  .cpcClickTabBq{
+    border: 0px solid #ffdc29;
+    border-left: 3px solid #ffdc29;
+    background: #fffcee;
+    font-size: 12px;
+    margin-top: 30px;
+  }
+
+  .cpcClickTabBqP{
+    margin-left: 20px;
+    /* margin-top: -10px;
+    margin-bottom: 10px; */
+  }
+
+  .cpcClickTabBqTFrame{
+    height: 1px;
+  }
+
+  .cpcClickTabBqBFrame{
+    height: 1px;
+  }
+
+  .searchCatFont{
+    font-size: 16px;
+  }
+
+  .tabTableDiv{
+    margin-top: 30px;
+  }
+
+  .unbanBtn{
+    background: #f33155;
+    color: white; 
+    border: none; 
+    border-radius: 3px;
+  }
+
+  .unbanBtn:hover{
+    background: #f5647e;
+    cursor: pointer;
+  }
+
+  .unbanBtnGray{
+    border:none;
+    cursor:pointer;
+    border-radius:3px;
+    width:110px;
+    height:30px;
+    background: #f0f0f0;
+  }
+
+  .unbanBtnGray:hover{
+    background-color: #fcfbfb;
+  }
+
+  .popup1{
+    background: white;
+    width: 800px;
+    border: 1px solid gray;
+  }
+
+  .popUp1H{
+    /* border: 1px solid red; */
+    width: 100%;
+    height: 30px;
+    margin-top: 13px;
+    margin-left: 10px;
+    font-size: 17px;
+    font-weight: bold;
+  }
+
+  .popup1cls{
+    cursor: pointer;
+    font-size: 15px;
+    background: #ffffff;
+    border:none;
+    margin-right: 10px;
+    height: 30px;
+    margin-top: 10px;
+  }
+
+  .tab2PUBtn{
+    border:none;
+    width:55px; 
+    height:30px;
+    border-radius:3px;
+  }
+
+  .tab2PUBtn:hover{
+    cursor: pointer;
+  }
+
+  .tab3PUSlct{
+    width:100px;
+    height:40px;
+    border:1px solid #edecec;
+  }
+
+  .logoExpImg{
+    margin-right:10px;
+    height:40px;
+    border:1px solid #e2e6e8;
+  }
+
+  .logoExpImg:hover{
+    cursor: pointer;
+  }
+
+  .logoRecGuid:hover{
+    cursor: pointer;
+    color: #d2d8db;
+  }
