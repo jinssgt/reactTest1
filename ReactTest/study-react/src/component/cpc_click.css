@@ -69,7 +69,7 @@
 
   .popup1{
     background: white;
-    width: 800px;
+    width: 900px;
     border: 1px solid gray;
   }
 
@@ -111,16 +111,59 @@
   }
 
   .logoExpImg{
-    margin-right:10px;
     height:40px;
-    border:1px solid #e2e6e8;
+    opacity: 0.7;
+    border: 1px solid #e2e6e8;
   }
 
   .logoExpImg:hover{
     cursor: pointer;
+    opacity: 1;
+    border: 1px solid #41b3f9;
+  }
+
+  .logoExpImg:visited{
+    opacity: 1;
+    border: 1px solid #41b3f9;
   }
 
   .logoRecGuid:hover{
     cursor: pointer;
     color: #d2d8db;
+  }
+
+  .popup-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .logoImgDlBtn{
+    width: 110px; 
+    border: 1px solid #e2e6e8;
+    margin-right: 10px;
+    background: white;
+  }
+
+  .logoImgDlBtn:hover{
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  .logoImgDlBtnW{
+    border: 1px solid #e2e6e8;
+    background: white;
+  }
+
+  .logoImgDlBtnW:hover{
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  .logoExpImgMn{
+    height:40px;
+  }
+
+  .logoExpImgMn:hover{
+    cursor: pointer;
   }

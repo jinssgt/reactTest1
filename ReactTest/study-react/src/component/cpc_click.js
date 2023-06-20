@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -13,7 +13,7 @@ import {
     ProfileTwoTone,
     RightCircleFilled
   } from '@ant-design/icons';
-  import { Button, Layout, Menu, theme, Tabs, Table, Divider, Radio, Descriptions, Switch } from 'antd';
+  import { Button, Layout, Menu, theme, Tabs, Table, Divider, Radio, Descriptions, Switch, Image } from 'antd';
   import { useState } from 'react';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
   import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
@@ -575,13 +575,60 @@ import {
         token: { colorBgContainer },
       } = theme.useToken();
     const [autoIpBanChk, setAutoIpBanChk] = useState(true);
+    const [open, setOpen] = useState(false);
+    const closeModal = () => setOpen(false);
+
+    // api fetchData into griddata with button......................................................
+    const DataGridWithFetchButton = () => {
+        const [apiFilteredData, setApiFilteredData] = useState([]);
+
+        const fetchDataFromDBIntoDatagrid = async() => {
+            try {
+                const requestBody = {
+                    // request body parameter here
+                };
+
+                // API call to fetch data from DB with request param POST
+                const response = await fetch('epi-endpoint', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
+                const responseData = await response.json();
+                setApiFilteredData(responseData);
+            } catch (error) {
+                console.log('Error fetching data!!!!! :', error);
+            }
+        };
+
+        const exampleColumns = [
+            {title: 'ID', dataIndex: 'id', key: 'id'},
+            {title: 'Name', dataIndex: 'name', key: 'Name'},
+            {title: 'Age', dataIndex: 'age', key: 'age'},
+        ];
+
+        // return area with fetched data
+        return (
+            <div>
+                <button onClick={fetchDataFromDBIntoDatagrid}>Fetch Data</button>
+                {apiFilteredData.length > 0 && <Table dataSource={apiFilteredData} columns={exampleColumns} />}
+            </div>
+        );
+    };
+    // export default fetchDataFromDBIntoDatagrid;
+
+    // .............................................................................../
+
     return (
         // 메인화면
         <Content
           style={{
             margin: '24px 26px',
             padding: 24,
-            minHeight: 793,
+            minHeight: 860,
             background: colorBgContainer,
             marginLeft:'264px'
           }}
@@ -692,7 +739,23 @@ import {
                                 </div>
                                 <div style={{padding:'10px', borderTop:'1px solid #edecec', display:'flex', justifyContent: "flex-end"}}>
                                     <button className="searchBtn" style={{color:'black', background:'white', border:'1px solid #edecec', borderRadius:'3px', marginRight:'10px'}} onClick={() => {close();}}>취소</button>
-                                    <button className="searchBtn">확인</button>
+                                    
+                                    <Popup trigger={<button className="searchBtn">확인</button>}>
+                                        {close => (
+                                        <div style={{width:'300px', border:'1px solid #e2e6e8', textAlign:'center', background:'white', borderRadius:'3px'}}>
+                                            <div style={{marginTop:'20px'}}>
+                                                <img src={CircExclm} alt='CircExclm'/>
+                                            </div>
+                                            <div style={{padding:'5px'}}>
+                                                <span style={{fontWeight:'bold', fontSize:'18px',}}>등록하시겠습니까?</span>
+                                            </div>
+                                            <div style={{padding:'5px', marginBottom:'15px'}}>
+                                                <button className="tab2PUBtn" style={{color:'white', background:'#00b82b', }}>등록</button>
+                                                <button onClick={() => {close();}} className="tab2PUBtn" style={{color:'white', background:'#aaaaaa', marginLeft:'10px'}}>취소</button>
+                                            </div>
+                                        </div>
+                                        )}
+                                    </Popup>
                                 </div>
                             </div>
                         )}
@@ -881,22 +944,22 @@ import {
                                         <ul style={{listStyleType:'none', display:'flex', flexDirection:'row', marginLeft:'-30px'}}>
                                             <li>
                                                 <label>
-                                                    <img className="logoExpImg" style={{width:'100px'}} src={LoggerTAL} alt="LoggerTAL"></img>
+                                                    <img className="logoExpImg" style={{width:'100px', marginRight:'10px'}} src={LoggerTAL} alt="LoggerTAL"></img>
                                                 </label>
                                             </li>
                                             <li>
                                                 <label>
-                                                    <img className="logoExpImg" style={{width:'100px'}} src={LoggerTAC} alt="LoggerTAC"></img>
+                                                    <img className="logoExpImg" style={{width:'100px', marginRight:'10px'}} src={LoggerTAC} alt="LoggerTAC"></img>
                                                 </label>
                                             </li>
                                             <li>
                                                 <label>
-                                                    <img className="logoExpImg" style={{width:'100px'}} src={LoggerTAR} alt="LoggerTAR"></img>
+                                                    <img className="logoExpImg" style={{width:'100px', marginRight:'10px'}} src={LoggerTAR} alt="LoggerTAR"></img>
                                                 </label>
                                             </li>
                                             <li>
                                                 <label>
-                                                    <img className="logoExpImg" style={{width:'200px'}} src={LoggerWTAL} alt="LoggerTAR"></img>
+                                                    <img className="logoExpImg" style={{width:'200px', marginRight:'10px'}} src={LoggerWTAL} alt="LoggerTAR"></img>
                                                 </label>
                                             </li>
                                             <li>
@@ -958,33 +1021,55 @@ import {
                                             </a>
                                         </div>
                                         <ul style={{listStyleType:'none', display:'flex', flexDirection:'row', marginLeft:'-30px'}}>
-                                            <li>
-                                                <label>
-                                                    <img onClick={() => console.log("clicked!")} className="logoExpImg" style={{width:'100px'}} src={LoggerTAL} alt="LoggerTAL"></img>
-                                                </label>
-                                                <a href="" target="_blank" download>
-                                                    <button>다운로드</button>
+                                            <li style={{width:'110px', height:'40px', marginRight:'10px'}}>
+                                                {/* <div style={{position:'absolute', width:'110px', height:'40px', justifyContent:'center', display:'flex', textAlign:'center'}}>
+                                                    <span>
+                                                        download
+                                                    </span>
+                                                </div> */}
+                                                <a href={LoggerTAL} target="_blank" download>
+                                                    <button className="logoImgDlBtn">
+                                                        <label>
+                                                           <img onClick={() => console.log("clicked!")} className="logoExpImgMn" style={{width:'100px'}} src={LoggerTAL} alt="LoggerTAL"></img>
+                                                        </label>
+                                                    </button>
                                                 </a>
                                             </li>
                                             <li>
-                                                <label>
-                                                    <img className="logoExpImg" style={{width:'100px'}} src={LoggerTAC} alt="LoggerTAC"></img>
-                                                </label>
+                                                <a href={LoggerTAC} target="_blank" download>
+                                                    <button className="logoImgDlBtn">
+                                                        <label>
+                                                            <img className="logoExpImgMn" style={{width:'100px'}} src={LoggerTAC} alt="LoggerTAC"></img>
+                                                        </label>
+                                                    </button>
+                                                </a>        
                                             </li>
                                             <li>
-                                                <label>
-                                                    <img className="logoExpImg" style={{width:'100px'}} src={LoggerTAR} alt="LoggerTAR"></img>
-                                                </label>
+                                                <a href={LoggerTAR} target="_blank" download>
+                                                    <button className="logoImgDlBtn">
+                                                        <label>
+                                                            <img className="logoExpImgMn" style={{width:'100px'}} src={LoggerTAR} alt="LoggerTAR"></img>
+                                                        </label>
+                                                    </button>
+                                                </a>
                                             </li>
                                             <li>
-                                                <label>
-                                                    <img className="logoExpImg" style={{width:'200px'}} src={LoggerWTAL} alt="LoggerTAR"></img>
-                                                </label>
+                                                <a href={LoggerWTAL} target="_blank" download>
+                                                    <button className="logoImgDlBtnW" style={{marginRight:'10px'}}>
+                                                        <label>
+                                                            <img className="logoExpImgMn" style={{width:'200px'}} src={LoggerWTAL} alt="LoggerTAR"></img>
+                                                        </label>
+                                                    </button>
+                                                </a>
                                             </li>
                                             <li>
-                                                <label>
-                                                    <img className="logoExpImg" style={{width:'200px'}} src={LoggerWTAR} alt="LoggerWTAR"></img>
-                                                </label>
+                                                <a href={LoggerWTAR} target="_blank" download>
+                                                    <button className="logoImgDlBtnW" style={{}}>
+                                                        <label>
+                                                            <img className="logoExpImgMn" style={{width:'200px'}} src={LoggerWTAR} alt="LoggerWTAR"></img>
+                                                        </label>
+                                                    </button>
+                                                </a>
                                             </li>
                                         </ul>
                                     </TabPane>
