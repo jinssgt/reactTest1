@@ -145,7 +145,7 @@
 
   .logoImgDlBtn:hover{
     background: rgba(0, 0, 0, 0.5);
-    opacity: 0.7;
+    opacity: 0.4;
     cursor: pointer;
   }
 
@@ -166,4 +166,20 @@
 
   .logoExpImgMn:hover{
     cursor: pointer;
+  }
+
+  .logoImgDlBox{
+    position:absolute;
+    display:flex;
+    text-align:center;
+    justify-content:center;
+    align-items:center;
+    width:100px; 
+    height:40px;
+    opacity: 0;
+  }
+
+  .logoImgDlBox:hover{
+    opacity: 1;
+    color: white;
   }

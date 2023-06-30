@@ -62,7 +62,7 @@ const gnbItems = [
         {
           label: 'Item 1',
         },
-        // {
+        // {f
         //   type: 'group',
         //   label: 'Item 2',
         //   children: [
@@ -147,8 +147,13 @@ const Lnb = () => {
     return (
         <Sider width={collapsed ? 0 : 240} style={{height:'100vh', position:'fixed',}}>
             <div className="demo-logo-vertical" />
-            <div style={{height:'60px', justifyContent:'center', textAlign:'center', padding:20, background:'white',}}>
-            <a><img src={Logo} alt='logo'/> <img src={LogoText} alt='logoText'/></a>
+            <div style={{height:'60px', display:'flex', justifyContent:'center', textAlign:'center',  background:'white',}}>
+              <div style={{display:'flex', justifyContent:'center', textAlign:'center', height:'35px', marginTop:'13px', marginLeft:'-10px'}}>
+                <img src={Logo} alt='logo'/>
+              </div>
+              <div style={{marginLeft:'15px', marginTop:'17px'}}>
+                <img src={LogoText} alt='logoText'/>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', padding: 10,}}>
                 <div>
