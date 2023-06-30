@@ -412,14 +412,14 @@ import { render } from "@testing-library/react";
     const measCat0 = [
       {
         label: '광고계정',
-        value: '1'
+        value: ''
       }
     ]
     
     const measCat1 = [
       {
         label: 'CPC 광고 매체 전체',
-        value: '1'
+        value: ''
       },
       {
         label: '네이버 사이트 검색광고',
@@ -442,117 +442,117 @@ import { render } from "@testing-library/react";
     const measCat2 = [
       {
         label: '레퍼러 전체 선택',
-        value: '1'
+        value: ''
       },
       {
         label: '레퍼러 있음',
-        value: '2'
+        value: 'Y'
       },
       {
         label: '레퍼러 없음',
-        value: '3'
+        value: 'N'
       },
     ]
     
     const measCat3 = [
       {
         label: '전체 유입횟수',
-        value: '1'
+        value: ''
       },
       {
         label: '전체 유입횟수 5회 이상',
-        value: '2'
+        value: 5
       },
       {
         label: '전체 유입횟수 10회 이상',
-        value: '3'
+        value: 10
       },
       {
         label: '전체 유입횟수 20회 이상',
-        value: '4'
+        value: 20
       },
       {
         label: '전체 유입횟수 30회 이상',
-        value: '5'
+        value: 30
       },
       {
         label: '전체 유입횟수 40회 이상',
-        value: '6'
+        value: 40
       },
       {
         label: '전체 유입횟수 50회 이상',
-        value: '7'
+        value: 50
       },
       {
         label: '전체 유입횟수 60회 이상',
-        value: '8'
+        value: 60
       },
       {
         label: '전체 유입횟수 70회 이상',
-        value: '9'
+        value: 70
       },
       {
         label: '전체 유입횟수 80회 이상',
-        value: '10'
+        value: 80
       },
       {
         label: '전체 유입횟수 90회 이상',
-        value: '11'
+        value: 90
       },
       {
         label: '전체 유입횟수 100회 이상',
-        value: '12'
+        value: 100
       },
     ]
     
     const measCat4 = [
       {
         label: '전체 클릭수',
-        value: '1'
+        value: ''
       },
       {
         label: '전체 클릭수 5회 이상',
-        value: '2'
+        value: 5
       },
       {
         label: '전체 클릭수 10회 이상',
-        value: '3'
+        value: 10
       },
       {
         label: '전체 클릭수 20회 이상',
-        value: '4'
+        value: 20
       },
       {
         label: '전체 클릭수 30회 이상',
-        value: '5'
+        value: 30
       },
       {
         label: '전체 클릭수 40회 이상',
-        value: '6'
+        value: 40
       },
       {
         label: '전체 클릭수 50회 이상',
-        value: '7'
+        value: 50
       },
       {
         label: '전체 클릭수 60회 이상',
-        value: '8'
+        value: 60
       },
       {
         label: '전체 클릭수 70회 이상',
-        value: '9'
+        value: 70
       },
       {
         label: '전체 클릭수 80회 이상',
-        value: '10'
+        value: 80
       },
       {
         label: '전체 클릭수 90회 이상',
-        value: '11'
+        value: 90
       },
       {
         label: '전체 클릭수 100회 이상',
-        value: '12'
+        value: 100
       },
     ]
 
