@@ -111,15 +111,31 @@
   }
 
   .logoExpImg{
-    height:40px;
-    opacity: 0.7;
+    height:70px;
+    opacity: 0.6;
     border: 1px solid #e2e6e8;
+    background: #f8f8f8;
+  }
+
+  .WLogoExpImg{
+    height:55px;
+    opacity: 0.6;
+    border: 1px solid #e2e6e8;
+    background: #f8f8f8;
   }
 
   .logoExpImg:hover{
     cursor: pointer;
     opacity: 1;
     border: 1px solid #41b3f9;
+    background: white;
+  }
+
+  .WLogoExpImg:hover{
+    cursor: pointer;
+    opacity: 1;
+    border: 1px solid #41b3f9;
+    background: white;
   }
 
   .logoExpImg:visited{
