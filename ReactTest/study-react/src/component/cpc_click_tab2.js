@@ -106,10 +106,16 @@ const CpcClickTab2 = () => {
     const day = String(current.getDate()).padStart(2, '0');
     const date = `${year}-${month}-${day}`;
     const date2 = `${year}-${prevMonth}-${day}`;
-    const handleDownloadCSVBtn = (rowData) => {
+    const handleDownloadCSVBtn = async (rowData) => {
         console.log('prep param', rowData);
         const selectedValue = rowData.ip;
-        fetchCpcClickIPDetailReport(selectedValue);
+        await fetchCpcClickIPDetailReport(selectedValue);
+
+        if (!cpcClickIPDetailReport) {
+            console.error('No data available.');
+            return;
+        }
+
         const dataForExcel = cpcClickIPDetailReport.map((item) => ({
             ClickTime: item.clickTime,
             VisitTime: item.visitTime,
@@ -119,6 +125,28 @@ const CpcClickTab2 = () => {
             SearchEngine: item.searchEngine,
             SearchKeyword: item.searchKeyword
         }));
+
+        // Convert column headers to an array of strings
+        const headerRow = Object.keys(dataForExcel[0]);
+
+        // Convert the table data to an array of arrays
+        const dataRows = dataForExcel.map((record) => headerRow.map((header) => record[header]));
+
+        // Combine header row with data rows
+        const excelData = [headerRow, ...dataRows];
+
+        // Create a new workbook
+        const workbook = XLSX.utils.book_new();
+        const sheetName = 'Sheet1';
+
+        // Convert the array of arrays (excelData) to a worksheet using 'XLSX.utils.aoa_to_sheet'
+        const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+        // Generate the XLSX file and download it
+        XLSX.writeFile(workbook, '네이버광고노출차단이력및관리.xlsx');
     }
     const fetchCpcClickIPDetailReport = async (param) => {
 
@@ -135,7 +163,13 @@ const CpcClickTab2 = () => {
         const ip = param;
         const media = 'NAVER';
         const response = await fetch(`${CPC_CLICK_DETAIL_REPORT}?clientSeq=${clientSeq}&ip=${ip}&dateBegin=${dateBegin}&dateEnd=${dateEnd}&media=${media}`)
-        .then((response) => response.json());
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error updating data');
+            }
+        });
   
         const dataArray = Array.isArray(response) ? response : [response];
   
@@ -277,6 +311,7 @@ const CpcClickTab2 = () => {
 
         useEffect(() => {
             fetchNaverBlockedIpList();
+            fetchCpcClickIPDetailReport();
           }, []);
 
         const fetchNaverBlockedIpList = async () => {

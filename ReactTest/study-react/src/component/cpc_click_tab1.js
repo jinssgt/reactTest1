@@ -548,7 +548,7 @@ const CpcClickTab1 = () => {
   
     return (
         <div>
-            {!matchIP && <Popup trigger={<Button className='costom-btn' style={{background:'#41b3f9'}}>노출제한 설정</Button>} modal>
+            {!matchIP && <Popup trigger={<button className='costom-btn' style={{background:'#41b3f9'}}>노출제한 설정</button>} modal>
                 {close => (
                     <div className="popup1" style={{width:'1000px'}}>
                         <div style={{fontWeight:'bold', borderBottom:'1px solid #aaaaaa'}}>
@@ -590,7 +590,7 @@ const CpcClickTab1 = () => {
                     </div>
                 )}
             </Popup>}
-            {matchIP && <Button disabled className='costom-btn'>노출제한 완료</Button>}
+            {matchIP && <button disabled className='banned-btn'>노출제한 완료</button>}
         </div>
         // <div>
         //   {!matchIP && <button>add</button>}
@@ -862,10 +862,10 @@ const CpcClickTab1 = () => {
                             </div>
                         )}
                         </Popup>
-                            <Button onClick={() => {selectedRows.forEach((rowKey) => {
+                            <button onClick={() => {selectedRows.forEach((rowKey) => {
                               const rowData = cpcClickIPReportData.find((row) => rowKey === row.ip);
                               handleAddSelectedBlkdIp(rowData);
-                            })}} className='default-btn' style={{marginLeft:'10px', marginBottom:'15px',}}>선택 노출제한</Button>
+                            })}} className='default-btn' style={{marginLeft:'10px', marginBottom:'15px',}}>선택 노출제한</button>
                         </div>
                     </div>
                     <div>
