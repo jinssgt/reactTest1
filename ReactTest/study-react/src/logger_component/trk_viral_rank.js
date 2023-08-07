@@ -10,22 +10,135 @@ import Btn2 from '../img/trk_viral/btn_02.png';
 
 const ViralRank = () => {
 
+    const logAnSys = []
+
+    const pubLogAn = [
+        {
+            title:'공공기관 웹 로그분석에 최적화된 “비즈스프링 로거(Logger...',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'10',
+            dataIndex:'1'
+        },
+        {
+            title:'	[보도자료] 비즈스프링, APEC기후센터 웹 로그분석 솔루션...',
+            rank:'11',
+            url:'https://blog.bizspring.co.kr/',
+            dataIndex:'2'
+        },
+    ]
+
+    const logAnSol = [
+        {
+            title:'	[보도자료] 비즈스프링, APEC기후센터 웹 로그분석 솔루션...',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'40',
+        }
+    ]
+
+    const insight = []
+    const massMail = []
+    const emailMarketing = []
+    const logger = []
+    const bizspringKW =[
+        {
+            title:'[비즈스프링] 4월 생일자 축하파티 전격공개!',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'10',
+        },
+        {
+            title:'비즈스프링에게 2013년이란?',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'22',
+        },
+        {
+            title:'비즈스프링 [BizSpring BOOST™] – 특허출원',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'35',
+        },
+        {
+            title:'키워드로 알아보는 2016 비즈스프링',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'45',
+        },
+        {
+            title:'★비회원★의 고객경험 강화를 위한 전략!! – 비즈스프링 부스트',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'47',
+        },
+        {
+            title:'오랜만에 뭉쳤다. 비즈스프링 전체회식 날',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'48',
+        },
+        {
+            title:'2007년 비즈스프링 하반기 워크샵 _ 족구대회',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'49',
+        },
+        {
+            title:'[비즈스프링] 마케터라면 꼭 알아야 할 상식1 – 애드테크',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'50',
+        },
+        {
+            title:'되리] ♥ 움직이는 당신은 성공 전략가! – 비즈스프링 인사이트™',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'51',
+        },
+        {
+            title:'모바일에서 비즈스프링을 만나세요. 모바일 웹사이트 오픈',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'52',
+        },
+    ]
+    const internetTrend =[]
+
+    const viralAn = [
+        {
+            title:'고객분석 : 남성 의류 쇼핑몰 [바이럴 업데이트] 실전편...',
+            url:'https://blog.bizspring.co.kr/',
+            rank:'97',
+        }
+    ]
+
     const [selectedBtnIndex, setSelectedBtnIndex] = useState(null);
     const [selectedKeyword, setSelectedKeyword] = useState();
     const handleButtonClick = (index) => {
         setSelectedBtnIndex(index);
-        if(index === 1){
+        if(index === 0){
+            setSelectedKeyword('logAnSys');
+        }else if(index === 1){
             setSelectedKeyword('pubLogAn');
-            console.log('selected index is 1', selectedKeyword);
         }else if(index === 2){
             setSelectedKeyword('logAnSol');
-            console.log('selected index is 2', selectedKeyword);
+        }else if(index === 3){
+            setSelectedKeyword('insight');
+        }else if(index === 4){
+            setSelectedKeyword('massMail');
+        }else if(index === 5){
+            setSelectedKeyword('emailMarketing');
+        }else if(index === 6){
+            setSelectedKeyword('logger');
+        }else if(index === 7){
+            setSelectedKeyword('bizspringKW');
+        }else if(index === 8){
+            setSelectedKeyword('internetTrend');
+        }else if(index === 9){
+            setSelectedKeyword('viralAn');
         }
     };
 
     const keywordMapping = {
+        logAnSys: logAnSys,
         pubLogAn: pubLogAn,
         logAnSol: logAnSol,
+        insight: insight,
+        massMail: massMail,
+        emailMarketing: emailMarketing,
+        logger: logger,
+        bizspringKW: bizspringKW,
+        internetTrend: internetTrend,
+        viralAn: viralAn,
     }
 
     const favPopover = (
@@ -109,44 +222,6 @@ const ViralRank = () => {
         },
     ]
 
-    const postList = [
-        {
-            title:'공공기관 웹 로그분석에 최적화된 “비즈스프링 로거(Logger...',
-            url:'https://blog.bizspring.co.kr/',
-            rank:'10',
-            dataIndex:'1'
-        },
-        {
-            title:'	[보도자료] 비즈스프링, APEC기후센터 웹 로그분석 솔루션...',
-            rank:'11',
-            url:'https://blog.bizspring.co.kr/',
-            dataIndex:'2'
-        },
-    ]
-
-    const pubLogAn = [
-        {
-            title:'공공기관 웹 로그분석에 최적화된 “비즈스프링 로거(Logger...',
-            url:'https://blog.bizspring.co.kr/',
-            rank:'10',
-            dataIndex:'1'
-        },
-        {
-            title:'	[보도자료] 비즈스프링, APEC기후센터 웹 로그분석 솔루션...',
-            rank:'11',
-            url:'https://blog.bizspring.co.kr/',
-            dataIndex:'2'
-        },
-    ]
-
-    const logAnSol = [
-        {
-            title:'	[보도자료] 비즈스프링, APEC기후센터 웹 로그분석 솔루션...',
-            url:'https://blog.bizspring.co.kr/',
-            rank:'40',
-        }
-    ]
-
     const postListColumns = [
         {
             label:'순위',
@@ -158,6 +233,21 @@ const ViralRank = () => {
             
         }
     ]
+
+    const keywordLength = keywordMapping[selectedKeyword] ? keywordMapping[selectedKeyword].length : 0;
+    const keywordItems = keywordMapping[selectedKeyword];
+    // const highestRank = keywordItems ? keywordItems.reduce((minRank, item) => Math.min(minRank, item.rank), Infinity) : 0;
+    const highestRank = keywordItems ? keywordItems.reduce((maxRank, item) => Math.max(maxRank, item.rank || 0), 0) : '-';
+    const [visibleItems, setVisibleItems] = useState(5);
+
+    const handleExpand = () => {
+        // Set the number of visible items to the total number of items in the list
+        setVisibleItems(keywordMapping[selectedKeyword]?.length);
+    };
+    const handleCollapse = () => {
+        // Set the number of visible items back to 5
+        setVisibleItems(5);
+    };
 
     return (
         <div>
@@ -200,13 +290,13 @@ const ViralRank = () => {
                         <div style={{display:'flex', marginBottom:'4px'}}>
                             <div className="rankTabContent" style={{marginRight:'2px'}}>
                                 <div className="rankTabContentTitle">확산된 내 포스트</div>
-                                <div style={{display:'flex', textAlign:'center', justifyContent:'center'}}>
-                                    <div style={{fontSize:'50px', height:'70px', color:'red'}}>{postList.length}</div>
-                                    <div className="blogTabPosts">posts</div>
-                                </div>
-                                <div style={{ marginBottom:'20px'}}>
-                                    최고 노출 순위 : - 위
-                                </div>
+                                    <div style={{display:'flex', textAlign:'center', justifyContent:'center'}}>
+                                        <div style={{fontSize:'50px', height:'70px', color:'red'}}>{keywordLength}</div>
+                                        <div className="blogTabPosts">posts</div>
+                                    </div>
+                                    <div style={{ marginBottom:'20px'}}>
+                                        최고 노출 순위 : {highestRank === 0 ? '-' : highestRank} 위
+                                    </div>
                                 <div style={{backgroundColor:'#f5f5f5', display:'flex', height:'25px', justifyContent:'center', alignItems:'center', borderTop:'1px solid #e5e5e5', borderBottom:'1px solid #e5e5e5'}}>
                                     <div style={{width:'20%'}}>
                                         순위
@@ -217,7 +307,8 @@ const ViralRank = () => {
                                 </div>
                                 <div style={{minHeight:'40px',display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column',}}>
                                     {/* 확산된 포스트가 없습니다. */}
-                                    {keywordMapping[selectedKeyword] && keywordMapping[selectedKeyword].map((item, index) => (
+                                    {/* {keywordMapping[selectedKeyword] && keywordMapping[selectedKeyword].map((item, index) => ( */}
+                                    {keywordMapping[selectedKeyword]?.slice(0, visibleItems).map((item, index) => (
                                         <div style={{display:'flex', width:'100%', border:'1px solid #e5e5e5', minHeight:'50px', justifyContent:'center', alignItems:'center',}}>
                                             <div style={{width:'20%'}}>
                                                 <div style={{height:'100%'}}>{item.rank}</div>
@@ -230,7 +321,11 @@ const ViralRank = () => {
                                                 <img className="rankBtn" src={Btn1}/>
                                                 <img className="rankBtn" src={Btn2}/>
                                             </div>
+                                            <div>
+                                                {item.length}
+                                            </div>
                                         </div>
+                                    // ))}
                                     ))}
                                 </div>
                             </div>
@@ -272,9 +367,13 @@ const ViralRank = () => {
                             </div>
                         </div>
                         <div style={{textAlign:'center', marginBottom:'10px'}}>
-                            <button className="moreInfoBtn">
-                                더보기
-                            </button>
+                            {keywordMapping[selectedKeyword]?.length > visibleItems ? (
+                                <button onClick={handleExpand} className="moreInfoBtn">
+                                    더보기
+                                </button>
+                            ) : (
+                                <button onClick={handleCollapse} className="moreInfoBtn">접기</button>
+                            )}
                         </div>
                     </TabPane>
                 </Tabs>
