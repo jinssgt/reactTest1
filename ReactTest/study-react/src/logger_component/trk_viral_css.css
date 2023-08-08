@@ -72,3 +72,11 @@
 .rankBtn:hover{
     cursor: pointer;
 }
+
+.flashSummaryTable{
+    font-size: 12px;
+}
+
+.filterBtn:hover{
+    cursor: pointer;
+}

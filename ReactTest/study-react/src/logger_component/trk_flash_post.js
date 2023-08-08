@@ -15,7 +15,7 @@ import IconDesktop from '../img/trk_viral/icon_desktop.png';
 import IconMobile from '../img/trk_viral/icon_mobile.png';
 import { Link } from 'react-router-dom';
 
-const FlashSummaryV = () => {
+const FlashPost = () => {
 
     const favPopover = (
         <div>
@@ -37,20 +37,9 @@ const FlashSummaryV = () => {
 
     const boardContentList = [
         {
-            title:'이메일 오픈율로 알아보는 포탈 이메일 서비스의 영양가.',
-            group:'비즈메일러',
-            writer:'김주형',
+            title:'[ 비즈스프링 블로그 ( blog.bizspring.co.kr ) ]',
             PCExpo:5,
             MPExpo:1,
-            comments:0,
-            react:0,
-        },
-        {
-            title:'시간은 금이다! – 체류시간에 관한 이야기',
-            group:'로거',
-            writer:'김주형',
-            PCExpo:1,
-            MPExpo:0,
             comments:0,
             react:0,
         },
@@ -71,23 +60,11 @@ const FlashSummaryV = () => {
             render: (text, record, index) => <span>{index + 1}</span>,
         },
         {
-            title: '게시물 그룹',
-            dataIndex: 'group',
-            align:'center',
-            className:'flashSummaryTable',
-        },
-        {
-            title: '게시물명',
+            title: '포스팅URL',
             dataIndex: 'title',
             align:'center',
             className:'flashSummaryTable',
             sorter: (a, b) => a.title-b.title,
-        },
-        {
-            title: '작성자',
-            dataIndex: 'writer',
-            align:'center',
-            className:'flashSummaryTable',
         },
         {
             title: 'Destop 노출',
@@ -139,13 +116,13 @@ const FlashSummaryV = () => {
                             <StarFilled className="favIcon"/>
                         </Popover>
                         <div style={{marginLeft:'10px', marginTop:'-3px'}}>
-                            게시물별 노출
+                            게시물별 포스팅URL
                         </div>
                         {/* <Link to="/trk_flash_post">LOGGER</Link> */}
                     </div>
                     <div style={{fontSize:'12px', marginTop:'10px', marginBottom:'10px', display:'flex', justifyContent: 'space-between' }}>
                         <div>
-                            게재한 컨텐츠별 노출수(PC, 모바일)를 분석한 리포트로 인기있는 게시물을 알 수 있습니다.
+                            게재한 컨텐츠가 스크래핑되어 확산된 정도를 확인할 수 있는 리포트입니다.
                         </div>
                         <div>
                             <DatePicker/>
@@ -161,7 +138,7 @@ const FlashSummaryV = () => {
                         <img className="filterBtn" src={BtnFilterOn} onClick={() => changeFilterStatus('N')} />
                     )}
                     <div>
-                        [게시물 그룹] 전체,
+                        [게시물명] 이메일 오픈율로 알아보는 포탈 이메일 서비스의 영양가.(30),
                     </div>
                 </div>
                 <div style={{display:'flex', width:'100%', background:'#f5f5f5', height:'90px', marginTop:'10px'}}>
@@ -213,15 +190,7 @@ const FlashSummaryV = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom:'10px', marginTop:'10px'}}>
-                    <input style={{marginRight:'5px'}}></input>
-                    <button style={{marginRight:'15px'}}>검색</button>
-                    <select>
-                        <option>20개씩 보기</option>
-                        <option>50개씩 보기</option>
-                    </select>
-                </div>
+            <div style={{marginTop:'20px'}}>
                 <Table
                     columns={boardColumns}
                     dataSource={boardContentList}
@@ -236,8 +205,7 @@ const FlashSummaryV = () => {
                 </div>
                 <div style={{fontSize:'12px', padding:'10px', borderBottom:'1px solid #e5e5e5',}}>
                     - 본 Report는 빠른 조회를 위하여 금일 1시간 이전 데이터를 조회합니다. <br />
-                    - 본 Report는 게시물 내 "노출코드" 삽입으로 측정됩니다. [리포트설정 바로가기] <br />
-                    - 본 Report는 "노출코드" 삽입 시점부터 "노출" 데이터를 수집하기에 게시물 등록 시점에 함께 진행해 주셔야 데이터 오차가 없습니다.
+                    - 본 Report는 [필터 및 옵션선택]에 선택하신 게시물이 포스팅되고 있는 상세URL을 확인하실 수 있는 리포트입니다.
                 </div>
             </div>
             <div style={{height:'45px'}}>
@@ -249,4 +217,4 @@ const FlashSummaryV = () => {
         </div>
     )
 }
-export default FlashSummaryV;
+export default FlashPost;

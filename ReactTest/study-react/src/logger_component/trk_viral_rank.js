@@ -7,6 +7,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import TipsExc from '../img/trk_viral/icon_sinfo.gif';
 import Btn1 from '../img/trk_viral/btn_01.png';
 import Btn2 from '../img/trk_viral/btn_02.png';
+import { Link } from 'react-router-dom';
 
 const ViralRank = () => {
 
@@ -237,8 +238,14 @@ const ViralRank = () => {
     const keywordLength = keywordMapping[selectedKeyword] ? keywordMapping[selectedKeyword].length : 0;
     const keywordItems = keywordMapping[selectedKeyword];
     // const highestRank = keywordItems ? keywordItems.reduce((minRank, item) => Math.min(minRank, item.rank), Infinity) : 0;
-    const highestRank = keywordItems ? keywordItems.reduce((maxRank, item) => Math.max(maxRank, item.rank || 0), 0) : '-';
+    // const highestRank = keywordItems ? keywordItems.reduce((minRank, item) => Math.min(minRank, item.rank || Infinity), Infinity) : '-';
+    // const highestRank = keywordItems ? keywordItems.reduce((maxRank, item) => Math.max(maxRank, item.rank || 0), 0) : '-';
     const [visibleItems, setVisibleItems] = useState(5);
+    let highestRank = '-';
+    if (keywordItems && keywordItems.length > 0) {
+    highestRank = keywordItems.reduce((minRank, item) => Math.min(minRank, item.rank || Infinity), Infinity);
+    }
+
 
     const handleExpand = () => {
         // Set the number of visible items to the total number of items in the list
@@ -260,6 +267,7 @@ const ViralRank = () => {
                         <div style={{marginLeft:'10px', marginTop:'-3px'}}>
                             네이버 노출순위
                         </div>
+                        {/* <Link to="/trk_flash_summary_v">LOGGER</Link> */}
                     </div>
                     <div style={{fontSize:'12px', marginTop:'10px', marginBottom:'10px', display:'flex', justifyContent: 'space-between' }}>
                         <div>
