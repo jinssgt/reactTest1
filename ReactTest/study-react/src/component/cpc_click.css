@@ -239,7 +239,7 @@
 }
 
 /* 블루 버튼 */
-.costom-btn{
+.custom-btn{
   height: 28px;
   border-radius: 3px;
   padding: 2px 8px;
@@ -251,7 +251,7 @@
   border-radius: 3px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.costom-btn:hover{
+.custom-btn:hover{
   opacity: 0.8;
   color:#ffffff !important;
 }

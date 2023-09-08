@@ -108,11 +108,11 @@ const CpcClickTab2 = () => {
     const date2 = `${year}-${prevMonth}-${day}`;
     const handleDownloadCSVBtn = async (rowData) => {
         console.log('prep param', rowData);
-        const selectedValue = rowData.ip;
-        await fetchCpcClickIPDetailReport(selectedValue);
+        // const selectedValue = rowData.ip;
+        // await fetchCpcClickIPDetailReport(selectedValue);
 
-        if (!cpcClickIPDetailReport) {
-            console.error('No data available.');
+        if (!cpcClickIPDetailReport || cpcClickIPDetailReport.length === 0) {
+            alert('데이터가 없습니다.');
             return;
         }
 
@@ -224,7 +224,7 @@ const CpcClickTab2 = () => {
         title: '네이버 CSV',
         align: 'center',
         render: (text, record) => 
-        <button onClick={() => handleDownloadCSVBtn(record)} className='default-btn'>다운로드</button>
+        <button onClick={() => {handleDownloadCSVBtn(record);}} onMouseEnter={() => fetchCpcClickIPDetailReport(record.ip)} className='default-btn'>다운로드</button>
         },
         {
         title: '차단관리',
@@ -233,7 +233,7 @@ const CpcClickTab2 = () => {
         render: (text, record) => 
         <button onClick={() => deleteData(record.clientSeq, record.fid)} className='unban-btn'>차단 해제</button>
         ,
-        sorter:(a, b) => a.unban - b.unban,
+        // sorter:(a, b) => a.unban - b.unban,
         },
         ];
 

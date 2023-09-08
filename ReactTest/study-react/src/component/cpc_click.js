@@ -37,6 +37,7 @@ import {
   import moment from 'moment';
   import CpcClickTab2 from './cpc_click_tab2';
   import CpcClickTab1 from './cpc_click_tab1';
+  import { Link } from 'react-router-dom';
 import { render } from "@testing-library/react";
   const { RangePicker } = DatePicker;
   const { Header, Sider, Content } = Layout;
@@ -194,7 +195,7 @@ import { render } from "@testing-library/react";
         align: 'center',
         width:'45%',
         render: (text, record, index) => <div style={{position:'relative', height: '40px', padding:'0px'}} onMouseEnter={() => setHoveredRow(index)} onMouseLeave={() => setHoveredRow(null)}>
-          <input ref={inputRef} type="text" value={anomalyDetectionScriptList[0].script} style={{border: '1px solid #e2e6e8', width:'100%', height:'100%'}} disabled/>
+          <textarea ref={inputRef} type="text" value={anomalyDetectionScriptList[0].script} style={{border: '1px solid #e2e6e8', width:'100%', height:'100%'}} disabled/>
           {hoveredRow === index && (
             <button className="copyBtn" style={{position: 'absolute', top: '0px', right: '0px'}} onClick={copyToClipBoard}>복사하기</button>
           )}
@@ -331,7 +332,7 @@ import { render } from "@testing-library/react";
                             <span style={{fontWeight:'bold', fontSize:'18px',}}>노출 제한 IP 등록이 완료되었습니다.</span>
                         </div>
                         <div style={{padding:'5px', marginBottom:'15px'}}>
-                            <button onClick={() => {close();}} className="btn costom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
+                            <button onClick={() => {close();}} className="btn custom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
                         </div>
                       </div>
                     </Popup>
@@ -735,7 +736,7 @@ import { render } from "@testing-library/react";
         // 메인화면
         <>
           <div>
-            <a>LOGGER <RightOutlined /></a>
+            <Link to="/trk_viral_rank">LOGGER <RightOutlined /></Link>
             <h1 style={{fontSize:'large'}}><FontAwesomeIcon icon={faUserSlash} /> CPC 광고 중복 클릭 IP (네이버)</h1>
           </div>
           <div>
@@ -778,7 +779,7 @@ import { render } from "@testing-library/react";
                     <p style={{fontSize:'16px', fontWeight:600}}>부정클릭 감시 스크립트 삽입</p>
                   </div>
                   <div style={{display:'flex', marginBottom:'-7px'}}>
-                    <Popup trigger={<button className='costom-btn' style={{marginBottom:'15px',}}>스크립트 설정</button>} modal>
+                    <Popup trigger={<button className='custom-btn' style={{marginBottom:'15px',}}>스크립트 설정</button>} modal>
                       {close => (
                         <div className="popup1">
                             <div style={{display:'flex', height:'60px', borderBottom:'1px solid #e2e6e8'}}>
@@ -1007,7 +1008,7 @@ import { render } from "@testing-library/react";
                               </ul>
                             <div style={{padding:'10px', borderTop:'1px solid #edecec', display:'flex', justifyContent: "flex-end"}}>
                                 <button className="searchBtn" style={{color:'black', background:'white', border:'1px solid #edecec', borderRadius:'3px', marginRight:'10px'}} onClick={() => {close();}}>취소</button>
-                                <button className="btn costom-btn">확인</button>
+                                <button className="btn custom-btn">확인</button>
                             </div>
                         </div>
                       </div>

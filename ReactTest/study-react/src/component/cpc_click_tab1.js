@@ -548,7 +548,7 @@ const CpcClickTab1 = () => {
   
     return (
         <div>
-            {!matchIP && <Popup trigger={<button className='costom-btn' style={{background:'#41b3f9'}}>노출제한 설정</button>} modal>
+            {!matchIP && <Popup trigger={<button className='custom-btn' style={{background:'#41b3f9'}}>노출제한 설정</button>} modal>
                 {close => (
                     <div className="popup1" style={{width:'1000px'}}>
                         <div style={{fontWeight:'bold', borderBottom:'1px solid #aaaaaa'}}>
@@ -584,7 +584,7 @@ const CpcClickTab1 = () => {
                                   handleAddBlkdIP();
                                   }
                                 }
-                                onMouseEnter={handleAddBlkdIpParam} className="costom-btn">확인</button>
+                                onMouseEnter={handleAddBlkdIpParam} className="custom-btn">확인</button>
                             </div>
                         </div>
                     </div>
@@ -804,7 +804,7 @@ const CpcClickTab1 = () => {
                         options={measCat4}/>
                       </div>
                       <div style={{width:'200px', marginLeft:20}}>
-                        <button className='costom-btn' onClick={fetchADCPCClickIPReport} >확인</button>
+                        <button className='custom-btn' onClick={fetchADCPCClickIPReport} >확인</button>
                       </div>
                     </div>
                   </div>
@@ -826,7 +826,7 @@ const CpcClickTab1 = () => {
                     <div>
                         <p style={{fontSize:'16px', fontWeight:600}}>중복 클릭 IP 목록</p>
                         <div style={{display:'flex'}}>
-                        <Popup trigger={<button className='costom-btn' style={{marginBottom:'15px',}}>노출 제한 IP 등록</button>} modal>
+                        <Popup trigger={<button className='custom-btn' style={{marginBottom:'15px',}}>노출 제한 IP 등록</button>} modal>
                         {close => (
                             <div className="popup1">
                                 <div style={{display:'flex', height:'60px'}}>
@@ -857,7 +857,7 @@ const CpcClickTab1 = () => {
                                 </div>
                                 <div style={{padding:'10px', borderTop:'1px solid #edecec', display:'flex', justifyContent: "flex-end"}}>
                                     <button className="default-btn" style={{color:'black', background:'white', border:'1px solid #edecec', borderRadius:'3px', marginRight:'10px'}} onClick={() => {close();}}>취소</button>
-                                    <button className="costom-btn" onClick={handleAddBlkdIP} >확인</button>
+                                    <button className="custom-btn" onClick={handleAddBlkdIP} >확인</button>
                                 </div>
                             </div>
                         )}
@@ -908,7 +908,7 @@ const CpcClickTab1 = () => {
                         <span style={{fontWeight:'bold', fontSize:'18px',}}>노출 제한 IP 등록이 완료되었습니다.</span>
                     </div>
                     <div style={{padding:'5px', marginBottom:'15px'}}>
-                        <button onClick={() => {setShowSuccessPopup(false); handleRefresh();}} className="costom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
+                        <button onClick={() => {setShowSuccessPopup(false); handleRefresh();}} className="custom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
                     </div>
                   </div>
                 </Popup>
@@ -921,7 +921,7 @@ const CpcClickTab1 = () => {
                         <span style={{fontWeight:'bold', fontSize:'18px',}}>이미 제한된 IP 입니다.</span>
                     </div>
                     <div style={{padding:'5px', marginBottom:'15px'}}>
-                        <button onClick={() => {setShowFailPopup(false)}} className="costom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
+                        <button onClick={() => {setShowFailPopup(false)}} className="custom-btn" style={{marginTop:'15px', color:'white', background:'#41b3f9', marginLeft:'10px'}}>확인</button>
                     </div>
                   </div>
                 </Popup>
