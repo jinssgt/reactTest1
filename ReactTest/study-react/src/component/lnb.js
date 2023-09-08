@@ -23,138 +23,167 @@ import Logo from '../img/admin-logo.png'
 import LogoText from '../img/admin-text.png'
 import TabPane from 'antd/es/tabs/TabPane';
 import { DatePicker, Space } from 'antd';
+import { Link } from 'react-router-dom';
 import './cpc_click.css'
 import Popup from 'reactjs-popup'
 const { Header, Sider, Content } = Layout;
+const { SubMenu } = Menu;
 
-const gnbItems = [
+  const lnbItems = [
     {
-      label: '',
-      key: 'mail',
-      icon: <BellFilled />,
-      children: [
-        {
-          label: 'item 1'
-        },
-        {
-          label: 'item 2'
-        },
-      ],
-    },
-    {
-      label: '',
-      key: 'app',
-      icon: <BellFilled />,
-      children: [
-        {
-          label: 'item 1'
-        },
-        {
-          label: 'item 2'
-        },
-      ],
-    },
-    {
-      label: '',
-      key: 'SubMenu',
-      icon: <AppstoreFilled />,
-      children: [
-        {
-          label: 'Item 1',
-        },
-        // {f
-        //   type: 'group',
-        //   label: 'Item 2',
-        //   children: [
-        //     {
-        //       label: 'Option 3',
-        //       key: 'setting:3',
-        //     },
-        //     {
-        //       label: 'Option 4',
-        //       key: 'setting:4',
-        //     },
-        //   ],
-        // },
-        {
-          label: 'item 2'
-        },
-      ],
-    },
-    {
+      label: 'Logger Module',
+      key: '1',
       icon: <UserOutlined />,
-      label: '{Name}',
-      key: '',
+    },
+    {
+      label: 'CPC 광고 노출제한 관리',
+      key: 'sub1',
+      icon: <UserDeleteOutlined/>,
       children: [
         {
-          icon: <UserOutlined/>,
-          label: 'my account',
-          key: 'myAccount',
-        },
-        {
-          icon: <CrownOutlined />,
-          label: 'admin',
-          key: 'admin',
-        },
-        {
-          icon: <PoweroffOutlined />,
-          label: 'Log Out',
-          key: 'logout'
+          label: 'CPC 광고 중복 클릭 IP',
+          key: 'CPCIP',
+          route: '/5510',
         }
       ]
     },
-  ];
-
-const selectSpnOpt = [
     {
-      label: '광고주를 선택하세요',
-      value: ''
+      label: '네이버 노출순위',
+      key: 'trk_viral_rank',
+      icon: <UserOutlined />,
+      route: '/trk_viral_rank',
     },
     {
-      label: 'option1',
-      value: 'option1'
+      label: '개시물별 노출',
+      key: 'trk_flash_summary_v',
+      icon: <UserOutlined />,
+      route: 'trk_flash_summary_v',
     },
     {
-      label: 'option2',
-      value: 'option2'
+      label: '개시물별 포스팅URL',
+      key: 'trk_flash_post',
+      icon: <UserOutlined />,
+      route: '/trk_flash_post',
+    },
+    {
+      label: '개시물별 추세',
+      key: 'trk_flash_trend_v',
+      icon: <UserOutlined />,
+      route: '/trk_flash_trend_v',
     }
   ]
 
-function getItem(label, key, icon, children) {
-    return {
-      key,
-      icon,
-      children,
-      label,
-    };
+  const renderMenu = (menuItems) => {
+    return menuItems.map((item) => {
+      if (item.children) {
+        return (
+          <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
+            {renderMenu(item.children)}
+          </Menu.SubMenu>
+        );
+      } else {
+        return (
+          <Menu.Item key={item.key} icon={item.icon}>
+            {/* Use the Link component to create the navigation link */}
+            <Link to={item.route}>{item.label}</Link>
+          </Menu.Item>
+        );
+      }
+    });
   };
-  
-  function callBack(key){
-    console.log(key);
-  };
-const lnbItems = [
-    getItem('Logger Module', '1', <UserOutlined/>),
-    getItem('CPC 광고 노출제한 관리', 'sub1', <UserDeleteOutlined />, [
-      getItem('CPC 광고 중복 클릭 IP', '3'),
-    ])
-  ];
 
-const Lnb = () => {
-    const [collapsed, setCollapsed] = useState(false);
+const Lnb = ({collapsed, clientData, lnbMenu}) => {
+    let lnbMenuOptions = [];
+    let clientSelectOptions = [];
+    // *********** working without parent/child sorting
+    // const renderLnbMenu = (menuItems) => {
+    //   return menuItems ? (
+    //       menuItems.map(item => {
+    //         return (
+    //           <Menu.Item key={item.viewNo}><p>{item.viewNm}</p></Menu.Item>
+    //         )
+    //       })
+    //   ) : (
+    //       <Menu.Item></Menu.Item>
+    //   )
+    // }
+
+    const preprocessedMenuData = preprocessMenuData(lnbMenu);
+
+    // Render the menu using the preprocessed data
+    const renderLnbMenu = (menuItems) => {
+      return menuItems ? (
+        menuItems.map(item => {
+          if (item.children && item.children.length > 0) {
+            // This item has children; it's a parent menu
+            return (
+              <SubMenu key={item.viewNo} title={item.viewNm}>
+                {renderLnbMenu(item.children)}
+              </SubMenu>
+            );
+          } else {
+            // This item has no children; it's a leaf menu
+            return (
+              <Menu.Item key={item.viewNo}>
+                <p>{item.viewNm}</p>
+              </Menu.Item>
+            );
+          }
+        })
+      ) : (
+        <Menu.Item></Menu.Item>
+      );
+    };
+    function preprocessMenuData(menuData) {
+      if (!menuData) {
+        return null; // Handle the case where menuData is undefined
+      }
+      const menuMap = new Map();
+    
+      menuData.forEach(item => {
+        const { viewNo, viewOption, parentNo } = item;
+    
+        if (!parentNo) {
+          // If it's a standalone item, treat it as a parent
+          menuMap.set(viewNo, { ...item, children: [] });
+        } else {
+          if (!menuMap.has(parentNo)) {
+            // If the parent doesn't exist in the map, create it
+            menuMap.set(parentNo, { children: [] });
+          }
+          menuMap.get(parentNo).children.push(item);
+        }
+      });
+    
+      // Extract the values from the map to create the final menu structure
+      return Array.from(menuMap.values());
+    }
+
     const {
         token: { colorBgContainer },
     } = theme.useToken();
+    if (clientData && clientData.length > 0) {
+      clientSelectOptions = clientData.map((client) => ({
+        label: client.clientNm,
+        value: client.seq,
+      }));
+    } else {
+      // If clientData is empty or null, add the "Please log in" placeholder
+      clientSelectOptions.push({
+        label: 'Please log in',
+        value: 'login',
+        disabled: true,
+      });
+    }
     return (
-        <Sider width={collapsed ? 0 : 240} style={{height:'100vh', position:'fixed',}}>
+        <Sider 
+          collapsed={collapsed} 
+          // width={collapsed ? 0 : 240} 
+          width='240px'
+          collapsedWidth="0"
+          style={{height:'100vh', position:'fixed', marginTop:'60px', zIndex:9999}}
+        >
             <div className="demo-logo-vertical" />
-            <div style={{height:'60px', display:'flex', justifyContent:'center', textAlign:'center',  background:'white',}}>
-              <div style={{display:'flex', justifyContent:'center', textAlign:'center', height:'35px', marginTop:'13px', marginLeft:'-10px'}}>
-                <img src={Logo} alt='logo'/>
-              </div>
-              <div style={{marginLeft:'15px', marginTop:'17px'}}>
-                <img src={LogoText} alt='logoText'/>
-              </div>
-            </div>
             <div style={{ display: 'flex', flexDirection: 'column', padding: 10,}}>
                 <div>
                     <p style={{color:'white'}}>광고주 선택</p>
@@ -163,18 +192,14 @@ const Lnb = () => {
                         IndicatorSeparator: () => null
                       }}
                     className="selectSp"
-                    options={selectSpnOpt}
+                    options={clientSelectOptions}
                     placeholder='광고주를 선택하세요'
                     />
                 </div>
             </div>
-            <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={['1']}
-            items={lnbItems}
-            style={{marginTop:'10px', borderBottom:'1px solid #e2e6e8', borderTop:'1px solid #e2e6e8'}}
-            />
+            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} style={{ marginTop: '10px', borderBottom: '1px solid #e2e6e8', borderTop: '1px solid #e2e6e8' }}>
+              {renderLnbMenu(preprocessedMenuData)}
+            </Menu>
         </Sider>
     )
 };
