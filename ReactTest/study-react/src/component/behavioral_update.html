@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <style>
+    .bs-container.open .dropdown-menu {
+      display: inline-grid;
+    }
+  </style>
+  <!-- <link rel="icon" type="image/png" sizes="16x16" th:href="@{${session.ssAgency.getOption('ci_favicon')}}"> -->
+  <!-- <title th:text="${session.ssAgency.getOption('ci_title')}"></title> -->
+</head>
+
+<body layout:fragment="main">
+  <div class="container-fluid">
+    <div class="row bg-title mb0" style="margin-bottom: 15px !important;">
+      <div class="col-lg-12">
+        <ol class="breadcrumb pt0">
+          <li>TAM</li>
+          <li>Segment Build</li>
+          <li>Behavioral</li>
+        </ol>
+      </div>
+      <div class="col-lg-12">
+        <div class="active title">
+          <i class="mdi fa-fw mdi-account-multiple"></i>&nbsp;
+          <span>New Behavioral Segment Build</span>
+        </div>
+      </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Content -->
+    <!-- ============================================================== -->
+    
+    <!-- loading -->
+    <div id="divLoading" class="loading" style="display: none;">
+      <div class="row cf">
+        <div class="span">
+          <div class="square"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- row -->
+    <div class="row">
+      <!-- col-9 -->
+      <div class="col-lg-9 pr30">
+        <div class="preview-shadow position-absolute"></div>
+        <form id="segmentForm">
+          <!-- Segment name & tags -->
+          <div class="panel panel-default mb20 filter-box">
+            <div class="panel-heading">Segment Name <span class="t-red font12">(필수)</span></div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="form-group mb10">
+                  <input type="hidden" name="template_seq" value="2">
+                  <input type="text" class="form-control font15 b" id="segment_nm" name="segment_nm" placeholder="세그먼트 명을 입력하세요. (필수)" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-group">
+                  <span class="input-group-addon tag-tit b">Tags <span class="t-gray font12">(선택)</span><button type="button" class="popover_btn ico-info mt0" data-container="body" data-html="true" data-trigger="hover" data-toggle="popover" data-placement="right" data-content="생성할 세그먼트의 조건에 맞는 태그를 입력하여 관리할 수 있습니다." data-original-title="Tags"><i class="fa fa-question-circle"></i></button></span>
+                  <input type="text" id="hashtag" name="hashtag" data-role="tagsinput" placeholder="add tags">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /Segment name & tags -->
+          
+          <!-- Data Source -->
+          <div class="panel panel-default mb0 filter-box">
+            <div class="panel-heading">
+              Data Source <span class="t-red font12">(필수)</span>
+              <button type="button" class="popover_btn ico-info mt0" data-container="body" data-html="true" data-trigger="hover" data-toggle="popover" data-placement="right"
+                      data-content="<ul><li  class='mb10'>세그먼트를 추출할 Data Source를 설정합니다.</li><li class='mb10'><span class='b'>Data Source Profile : </span>세그먼트를 추출할 프로파일(사이트)을 선택합니다. <span class='pt10 display-inlineblock'>세그먼트 추출을 위해서는 반드시 사이트 내 GP 스크립트가 설치되어 있어야 합니다.</span></li><li class='mb10'><span class='b'>Date Range : </span> 설정한 기간의 잠재 고객을 확인(Segment Preview)할 수 있으며, 설정한 기간 내 조건에 만족하는 오디언스를 생성할 수 있습니다.</li></ul>"
+                      data-original-title="Data Source">
+                <i class="fa fa-question-circle"></i></button>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-lg-3">
+                  <select class="form-control col-md-1" multiple="multiple" id="select_profile">
+                    <option th:each="profile:${profileList}" th:value="${profile.pfno}" th:text="|${profile.profileNm} (${profile.siteUrl})|" selected></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 pl0">
+                  <select class="form-control" id="select_lookback" required>
+                    <option value="" disabled selected>Date Range</option>
+                    <option value="1">어제</option>
+                    <option value="3">최근 3일</option>
+                    <option value="7">최근 7일</option>
+                    <option value="14">최근 14일</option>
+                    <option value="21">최근 21일</option>
+                    <option value="28">최근 28일</option>
+                    <option value="30">최근 30일</option>
+                    <option value="60">최근 60일</option>
+                    <option value="90">최근 90일</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /Data Source -->
+          
+          <!-- Segment Definition -->
+          <div id="segment-definition" class="panel panel-default mt20 mb0 filter-box">
+            <div class="panel-heading">
+              Segment Definition <span class="t-red font12">(필수)</span>
+              <button type="button" class="popover_btn ico-info mt0" data-container="body" data-html="true" data-trigger="hover" data-toggle="popover" data-placement="right"
+                      data-content="<ul><li class='mb10'>Segment Definition는 추출할 세그먼트의 조건을 조합하여 생성할 수 있습니다.</li><li class='mb10'><span class='b'>AND(Add Condition) : </span>동일 그룹내 조건이 공통으로 포함하는 교집합<p class='pt10'><img src='/gp/img/seg_img01.png' ></p></li><li class='mb10'><span class='b'>OR(Add Group) : </span> 그룹 별 하나에라도 속하는 조건을 모두 모은 합집합<p class='pt10'><img src='/gp/img/seg_img02.png' ></p></li></ul>"
+                      data-original-title="Segment Definition"><i class="fa fa-question-circle"></i>
+              </button>
+            </div>
+            <div id="panel-trait" class="panel-body panel-trait">
+              <div class="trait-builder" data-group="0">
+                <div class="row build-dlt"><a href="javascript:void(0);" class="sa-warning"><i class="fa fa-trash mr5" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove Group Condition"></i></a></div>
+                <div class="conditions" data-element="0">
+                  <div class="row added-condition">
+                    <div class="col-lg-3 col-md-3 pl0 trait-area">
+                      <div class="form-dropdown dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-expanded="false">
+                        <p class="group-title">성별</p><p><span class="fa arrow arrow-down"></span></p>
+                      </div>
+                      <div class="dropdown-menu mail-segment pre-trait-area seg-scroll-none">
+                        <div class="message-center mail-seg-list">
+                          <div class="group-search input-group">
+                            <input type="search" placeholder="검색" class="w100"><span class="input-group-addon bd-0"><i class="fa fa-search"></i></span>
+                          </div>
+                        </div>
+                        <div class="trait-list-scroll">
+                        </div>
+                      </div>
+                    </div>
+                    <!--<div class="col-lg-3 col-md-3 pl0 trait-attr-area">
+                    </div>-->
+                    <!--************************************************************************************
+                    
+                    			barrier 주석 고정 데이터 (기존 html은 behvioral_new.html) 
+                    			
+                    ************************************************************************************-->
+                    <!--barrier-->
+                    <div class="col-lg-3 col-md-3 pl0 trait-attr-area">
+				      <input type="hidden" name="sg_0_0__seg" value="sex">
+				      <div class="form-dropdown dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-expanded="false">
+				        <p>세부 항목 선택</p><p><span class="fa arrow arrow-down"></span></p>
+				      </div>
+				      <!-- segment menu -->
+				      <div class="dropdown-menu mail-segment">
+				        <input type="hidden" name="sg_0_0__value" value="M">
+				        <div class="left-seg-menu">
+				          <div class="allow-focus">
+				            <div class="seg-title">
+				              <p class="b mb0">성별</p>
+				            </div>
+				            <div class="seg-control-value">
+				              <select class="form-control form-dropdown select-oper" name="sg_0_0__oper">
+				                <option value="OPER_TYPE_IN">포함</option>
+				                <option value="OPER_TYPE_NOT_IN">포함하지 않음</option>
+				              </select>
+				            </div>
+				            <div class="seg-search input-group">
+				              <input type="search" placeholder="검색" class="w100"><span class="input-group-addon bd-0"><a href="javascript:void(0);" id="show" onclick="if(hide.style.display=='none') {hide.style.display='';show} else {hide.style.display='none';show}"><i class="fas fa-plus"></i></a></span>
+				            </div>
+				            <div id="hide" aria-expanded="true" class="search-dropdown" style="display:none;"><span class="mr10 select-option-startswith"><input type="checkBox"><span class="ml5 font12">시작값 일치</span></span></div>
+				            <div class="all-seg-select pd0">
+				              <div class="btn-group all-seg-btn" style="width:100%; border:0;">
+				                <button type="button" class="btn btn-default" data-select-type="select" style="width:50%; border:0; padding: 10px 0;">전체선택</button>
+				                <button type="button" class="btn btn-default" data-select-type="deselect" style="width:50%;border:0; padding: 10px 0;border-left:1px solid #e4e7ea !important;">전체해제</button>
+				              </div>
+				            </div>
+				            <div class="seg-list seg-list-scroll">
+				              
+				                <div class="attr-wrapper">
+				                  <span class="attr-checkbox"><input type="checkbox" value="M" data-attr-nm="남성" checked></span>
+				                  <span class="attr-tip" title="남성">남성</span>
+				                </div>
+				              
+				                <div class="attr-wrapper">
+				                  <span class="attr-checkbox"><input type="checkbox" value="F" data-attr-nm="여성"></span>
+				                  <span class="attr-tip" title="여성">여성</span>
+				                </div>
+				            
+				                <div class="attr-wrapper">
+				                  <span class="attr-checkbox"><input type="checkbox" value="U" data-attr-nm="미지정"></span>
+				                  <span class="attr-tip" title="미지정">미지정</span>
+				                </div>
+				            
+				            </div>
+				          </div>
+				        </div>
+				      </div>
+				      <!-- segment menu -->
+				    </div>
+                    <!--barrier-->
+                    <!--2nd barrier-->
+                    <div class="col-lg-4 pl0 seg-attr-result">
+				      <blockquote class="bq-bh mb0 segment-result">포함 / 남성</blockquote>
+				    </div>
+                    <!--2nd barrier-->
+                    <!--<div class="col-lg-4 pl0 seg-attr-result">
+                    </div>-->
+                    
+                    <div class="col-lg-2 tr pr0">
+                      <a href="javascript:void(0);" class="dlt-condition"><span class="material-icons dlt-icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove Condition">close</span></a>
+                    </div>
+                  </div>
+                  <div class="row condition-op">
+                    <div class="btn-group">
+                      <a href="javascript:void(0);" class="dropdown-toggle add-circle" aria-expanded="true" data-toggle="dropdown" type="button" data-title="설정"> <span class="material-icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Condition">add_circle</span> </a>
+                      <ul role="menu" class="dropdown-menu left add-btn-group">
+                        <li data-condition="and"><a href="javascript:void(0);">AND<span class="ml5 font12 t-gray">(add condition)</span></a></li>
+                        <li data-condition="or"><a href="javascript:void(0);">OR<span class="ml5 font12 t-gray">(add group)</span></a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <!--3rd barrier **************-->
+                <div class="row condition-st and">
+	              <label>AND</label>
+	            </div>
+                <!--3rd barrier end ************-->
+                <!--4th barrier ************-->
+                <div class="conditions" data-element="1">
+                  <div class="row added-condition">
+                    <div class="col-lg-3 col-md-3 pl0 trait-area">
+                      <div class="form-dropdown dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-expanded="false">
+                        <p class="group-title">연령</p><p><span class="fa arrow arrow-down"></span></p>
+                      </div>
+                      <div class="dropdown-menu mail-segment pre-trait-area seg-scroll-none">
+                        <div class="message-center mail-seg-list">
+                          <div class="group-search input-group">
+                            <input type="search" placeholder="검색" class="w100"><span class="input-group-addon bd-0"><i class="fa fa-search"></i></span>
+                          </div>
+                        </div>
+                        <div class="trait-list-scroll">
+                    <div class="message-center mail-seg-list allow-focus" data-group="인구통계학적(Demographic)">
+                      <div class="mail-contnet trait-parent">
+                        <h5><span class="trait-ico"><img src="/gp/img/trait-a.svg" alt="인구통계학적(Demographic)"></span> 인구통계학적(Demographic)</h5>
+                      </div>
+                    </div><div class="message-center mail-trait trait-div">
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="sex" data-seg-nm="성별">
+                      <p class="trait-name">성별</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="age" data-seg-nm="연령">
+                      <p class="trait-name">연령</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="device" data-seg-nm="디바이스[P|M]">
+                      <p class="trait-name">디바이스[P|M]</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="os" data-seg-nm="운영체제">
+                      <p class="trait-name">운영체제</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="browser" data-seg-nm="앱/브라우저">
+                      <p class="trait-name">앱/브라우저</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="mobile_brand" data-seg-nm="모바일 브랜드">
+                      <p class="trait-name">모바일 브랜드</p>
+                    </a></div>
+                    <div class="message-center mail-seg-list allow-focus" data-group="지리적(Geographic)">
+                      <div class="mail-contnet trait-parent">
+                        <h5><span class="trait-ico"><img src="/gp/img/trait-b.svg" alt="지리적(Geographic)"></span> 지리적(Geographic)</h5>
+                      </div>
+                    </div><div class="message-center mail-trait trait-div">
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="country" data-seg-nm="국가">
+                      <p class="trait-name">국가</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="region" data-seg-nm="지역">
+                      <p class="trait-name">지역</p>
+                    </a></div>
+                    <div class="message-center mail-seg-list allow-focus" data-group="행동(Behavior)">
+                      <div class="mail-contnet trait-parent">
+                        <h5><span class="trait-ico"><img src="/gp/img/trait-c.svg" alt="행동(Behavior)"></span> 행동(Behavior)</h5>
+                      </div>
+                    </div><div class="message-center mail-trait trait-div">
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="visit_new" data-seg-nm="처음 방문 여부">
+                      <p class="trait-name">처음 방문 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="visit_reactivation" data-seg-nm="*재활성화 여부">
+                      <p class="trait-name">*재활성화 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="visit_campaign" data-seg-nm="캠페인 반응 여부">
+                      <p class="trait-name">캠페인 반응 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_review_rank" data-seg-nm="상품평 조회수 (%순위)">
+                      <p class="trait-name">상품평 조회수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="contact_cs_yn" data-seg-nm="고객 지원 문의 여부">
+                      <p class="trait-name">고객 지원 문의 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_pageview_rank" data-seg-nm="상품 반복 조회수 (%순위)">
+                      <p class="trait-name">상품 반복 조회수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_category_view_rank" data-seg-nm="상품 카테고리 반복 조회수 (%순위)">
+                      <p class="trait-name">상품 카테고리 반복 조회수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_favorite_rank" data-seg-nm="상품 즐겨찾기 추가수 (%순위)">
+                      <p class="trait-name">상품 즐겨찾기 추가수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_favorite_remove_rank" data-seg-nm="상품 즐겨찾기 삭제수 (%순위)">
+                      <p class="trait-name">상품 즐겨찾기 삭제수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_cart_rank" data-seg-nm="상품 장바구니 추가수 (%순위)">
+                      <p class="trait-name">상품 장바구니 추가수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_cart_remove_rank" data-seg-nm="상품 장바구니 삭제수 (%순위)">
+                      <p class="trait-name">상품 장바구니 삭제수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_order_rank" data-seg-nm="구매 횟수 (%순위)">
+                      <p class="trait-name">구매 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_order_cancel_rank" data-seg-nm="구매 취소 횟수 (%순위)">
+                      <p class="trait-name">구매 취소 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="booking_rank" data-seg-nm="예약 횟수 (%순위)">
+                      <p class="trait-name">예약 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="booking_cancel_rank" data-seg-nm="예약 취소 횟수 (%순위)">
+                      <p class="trait-name">예약 취소 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="signup_yn" data-seg-nm="회원 가입 여부">
+                      <p class="trait-name">회원 가입 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal01_rank" data-seg-nm="사용자 정의 목표(G1) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G1) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal02_rank" data-seg-nm="사용자 정의 목표(G2) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G2) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal03_rank" data-seg-nm="사용자 정의 목표(G3) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G3) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal04_rank" data-seg-nm="사용자 정의 목표(G4) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G4) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal05_rank" data-seg-nm="사용자 정의 목표(G5) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G5) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal06_rank" data-seg-nm="사용자 정의 목표(G6) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G6) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal07_rank" data-seg-nm="사용자 정의 목표(G7) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G7) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal08_rank" data-seg-nm="사용자 정의 목표(G8) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G8) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal09_rank" data-seg-nm="사용자 정의 목표(G9) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G9) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="goal10_rank" data-seg-nm="사용자 정의 목표(G10) 전환수 (%순위)">
+                      <p class="trait-name">사용자 정의 목표(G10) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="membership_yn" data-seg-nm="고급/정기 멤버십 가입 여부">
+                      <p class="trait-name">고급/정기 멤버십 가입 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_review_register_rank" data-seg-nm="상품평 등록 횟수 (%순위)">
+                      <p class="trait-name">상품평 등록 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="event_withdrawal_rank" data-seg-nm="회원 탈퇴 연관 이벤트 횟수 (%순위)">
+                      <p class="trait-name">회원 탈퇴 연관 이벤트 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="product_sharing_rank" data-seg-nm="상품/콘텐츠 공유 횟수 (%순위)">
+                      <p class="trait-name">상품/콘텐츠 공유 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="brand_channel_follow_yn" data-seg-nm="브랜드 채널 Follow 여부">
+                      <p class="trait-name">브랜드 채널 Follow 여부</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="claim_complain_rank" data-seg-nm="클레임/컴플레인 접수 횟수 (%순위)">
+                      <p class="trait-name">클레임/컴플레인 접수 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="visit_rank" data-seg-nm="방문 횟수 (%순위)">
+                      <p class="trait-name">방문 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="visit_campaign_rank" data-seg-nm="캠페인 유입 방문 횟수 (%순위)">
+                      <p class="trait-name">캠페인 유입 방문 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="pageview_rank" data-seg-nm="페이지뷰 (%순위)">
+                      <p class="trait-name">페이지뷰 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="duration_rank" data-seg-nm="체류시간 (%순위)">
+                      <p class="trait-name">체류시간 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="last_visit_days_rank" data-seg-nm="마지막 방문 후 경과일 (%순위)">
+                      <p class="trait-name">마지막 방문 후 경과일 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="last_order_days_rank" data-seg-nm="마지막 주문 후 경과일 (%순위)">
+                      <p class="trait-name">마지막 주문 후 경과일 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="frequency_visit_hour" data-seg-nm="방문 주요 시간대">
+                      <p class="trait-name">방문 주요 시간대</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="frequency_visit_weekday" data-seg-nm="방문 주요 요일">
+                      <p class="trait-name">방문 주요 요일</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="frequency_order_hour" data-seg-nm="구매 주요 시간대">
+                      <p class="trait-name">구매 주요 시간대</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="frequency_order_weekday" data-seg-nm="구매 주요 요일">
+                      <p class="trait-name">구매 주요 요일</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_channel" data-seg-nm="방문채널">
+                      <p class="trait-name">방문채널</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_search_organic" data-seg-nm="검색엔진(자연검색)">
+                      <p class="trait-name">검색엔진(자연검색)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_search_paid" data-seg-nm="검색광고 플랫폼(유료검색)">
+                      <p class="trait-name">검색광고 플랫폼(유료검색)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_social_media" data-seg-nm="소셜미디어 플랫폼">
+                      <p class="trait-name">소셜미디어 플랫폼</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_video_sharing" data-seg-nm="동영상 공유 플랫폼">
+                      <p class="trait-name">동영상 공유 플랫폼</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_ad_display" data-seg-nm="디스플레이 광고 플랫폼">
+                      <p class="trait-name">디스플레이 광고 플랫폼</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_ad_etc" data-seg-nm="기타 정의된 방문 채널">
+                      <p class="trait-name">기타 정의된 방문 채널</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_brand_keyword" data-seg-nm="검색어 분류">
+                      <p class="trait-name">검색어 분류</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="referrer_campaign" data-seg-nm="마케팅 캠페인">
+                      <p class="trait-name">마케팅 캠페인</p>
+                    </a></div>
+                    <div class="message-center mail-seg-list allow-focus" data-group="매출/비용">
+                      <div class="mail-contnet trait-parent">
+                        <h5><span class="trait-ico"><img src="/gp/img/trait-d.svg" alt="매출/비용"></span> 매출/비용</h5>
+                      </div>
+                    </div><div class="message-center mail-trait trait-div">
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="purchase_rank" data-seg-nm="구매 금액 (%순위)">
+                      <p class="trait-name">구매 금액 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="avg_purchase_rank" data-seg-nm="평균 구매 금액 (%순위)">
+                      <p class="trait-name">평균 구매 금액 (%순위)</p>
+                    </a></div>
+                    <div class="message-center mail-seg-list allow-focus" data-group="고객 생애가치(LTV)">
+                      <div class="mail-contnet trait-parent">
+                        <h5><span class="trait-ico"><img src="/gp/img/trait-e.svg" alt="고객 생애가치(LTV)"></span> 고객 생애가치(LTV)</h5>
+                      </div>
+                    </div><div class="message-center mail-trait trait-div">
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_visit_rank" data-seg-nm="생애 방문 횟수 (%순위)">
+                      <p class="trait-name">생애 방문 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_visit_campaign_rank" data-seg-nm="생애 캠페인 유입 방문 횟수 (%순위)">
+                      <p class="trait-name">생애 캠페인 유입 방문 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_pageview_rank" data-seg-nm="생애 페이지뷰 (%순위)">
+                      <p class="trait-name">생애 페이지뷰 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_duration_rank" data-seg-nm="생애 체류시간 (%순위)">
+                      <p class="trait-name">생애 체류시간 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_avg_visit_interval_rank" data-seg-nm="생애 평균 방문 간격 (%순위)">
+                      <p class="trait-name">생애 평균 방문 간격 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_avg_order_interval_rank" data-seg-nm="생애 평균 구매 간격 (%순위)">
+                      <p class="trait-name">생애 평균 구매 간격 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_order_rank" data-seg-nm="생애 구매 횟수 (%순위)">
+                      <p class="trait-name">생애 구매 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_order_cancel_rank" data-seg-nm="생애 구매 취소 횟수 (%순위)">
+                      <p class="trait-name">생애 구매 취소 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_booking_rank" data-seg-nm="생애 예약 횟수 (%순위)">
+                      <p class="trait-name">생애 예약 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_booking_cancel_rank" data-seg-nm="생애 예약 취소 횟수 (%순위)">
+                      <p class="trait-name">생애 예약 취소 횟수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal01_rank" data-seg-nm="생애 사용자 정의 목표(G1) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G1) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal02_rank" data-seg-nm="생애 사용자 정의 목표(G2) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G2) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal03_rank" data-seg-nm="생애 사용자 정의 목표(G3) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G3) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal04_rank" data-seg-nm="생애 사용자 정의 목표(G4) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G4) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal05_rank" data-seg-nm="생애 사용자 정의 목표(G5) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G5) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal06_rank" data-seg-nm="생애 사용자 정의 목표(G6) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G6) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal07_rank" data-seg-nm="생애 사용자 정의 목표(G7) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G7) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal08_rank" data-seg-nm="생애 사용자 정의 목표(G8) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G8) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal09_rank" data-seg-nm="생애 사용자 정의 목표(G9) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G9) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_goal10_rank" data-seg-nm="생애 사용자 정의 목표(G10) 전환수 (%순위)">
+                      <p class="trait-name">생애 사용자 정의 목표(G10) 전환수 (%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_purchase_rank" data-seg-nm="생애 구매 금액(%순위)">
+                      <p class="trait-name">생애 구매 금액(%순위)</p>
+                    </a>
+                    <a class="trait-wrapper" href="javascript:void(0);" data-seg="lifetime_avg_purchase_rank" data-seg-nm="생애 평균 구매 금액 (%순위)">
+                      <p class="trait-name">생애 평균 구매 금액 (%순위)</p>
+                    </a></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+  
+  
+				  <div class="col-lg-7 col-md-7 pl0">
+				    <input type="hidden" name="sg_0_1__seg" value="age">
+				    <div class="radio radio-info">
+				      
+				        <input type="radio" id="sg_0_1__0" name="sg_0_1__value" value="A" checked>
+				        <label for="sg_0_1__0" class="pr40">0~3세</label>
+				      
+				        <input type="radio" id="sg_0_1__1" name="sg_0_1__value" value="B">
+				        <label for="sg_0_1__1" class="pr40">4~6세</label>
+				      
+				        <input type="radio" id="sg_0_1__2" name="sg_0_1__value" value="C">
+				        <label for="sg_0_1__2" class="pr40">7~12세</label>
+				      
+				        <input type="radio" id="sg_0_1__3" name="sg_0_1__value" value="D">
+				        <label for="sg_0_1__3" class="pr40">13~15세</label>
+				      
+				        <input type="radio" id="sg_0_1__4" name="sg_0_1__value" value="E">
+				        <label for="sg_0_1__4" class="pr40">16~18세</label>
+				      
+				        <input type="radio" id="sg_0_1__5" name="sg_0_1__value" value="F">
+				        <label for="sg_0_1__5" class="pr40">19~22세</label>
+				      
+				        <input type="radio" id="sg_0_1__6" name="sg_0_1__value" value="G">
+				        <label for="sg_0_1__6" class="pr40">23~24세</label>
+				      
+				        <input type="radio" id="sg_0_1__7" name="sg_0_1__value" value="H">
+				        <label for="sg_0_1__7" class="pr40">25~29세</label>
+				      
+				        <input type="radio" id="sg_0_1__8" name="sg_0_1__value" value="I">
+				        <label for="sg_0_1__8" class="pr40">30~34세</label>
+				      
+				        <input type="radio" id="sg_0_1__9" name="sg_0_1__value" value="J">
+				        <label for="sg_0_1__9" class="pr40">35~39세</label>
+				      
+				        <input type="radio" id="sg_0_1__10" name="sg_0_1__value" value="K">
+				        <label for="sg_0_1__10" class="pr40">40~49세</label>
+				      
+				        <input type="radio" id="sg_0_1__11" name="sg_0_1__value" value="L">
+				        <label for="sg_0_1__11" class="pr40">50~59세</label>
+				      
+				        <input type="radio" id="sg_0_1__12" name="sg_0_1__value" value="M">
+				        <label for="sg_0_1__12" class="pr40">60~69세</label>
+				      
+				        <input type="radio" id="sg_0_1__13" name="sg_0_1__value" value="N">
+				        <label for="sg_0_1__13" class="pr40">70~79세</label>
+				      
+				        <input type="radio" id="sg_0_1__14" name="sg_0_1__value" value="O">
+				        <label for="sg_0_1__14" class="pr40">80세 이상</label>
+				      
+				    </div>
+				  </div>
+
+  
+				  <div class="col-lg-2 tr pr0">
+				    <a href="javascript:void(0);" class="dlt-condition"><span class="material-icons dlt-icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove Condition">close</span></a>
+				  </div>
+
+
+				  </div>
+                  <div class="row condition-op">
+                    <div class="btn-group">
+                      <a href="javascript:void(0);" class="dropdown-toggle add-circle" aria-expanded="true" data-toggle="dropdown" type="button" data-title="설정"> <span class="material-icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Condition">add_circle</span> </a>
+                      <ul role="menu" class="dropdown-menu left add-btn-group">
+                        <li data-condition="and"><a href="javascript:void(0);">AND<span class="ml5 font12 t-gray">(add condition)</span></a></li>
+                        <li data-condition="or"><a href="javascript:void(0);">OR<span class="ml5 font12 t-gray">(add group)</span></a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <!--4th barrier end ***************-->
+                <!--************************************************************************************
+                    
+                    			barrier 주석 고정 데이터 end (기존 html은 behvioral_new.html) 
+                    			
+                    ************************************************************************************-->
+              </div>
+            </div>
+          </div>
+          <!-- /Segment Definition -->
+          
+          <!-- 스케줄 -->
+          <div class="panel panel-default mt20 mb20 filter-box">
+            <div class="panel-heading">Schedule for Target Audience
+              <div class="panel-action"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
+            </div>
+            <div class="panel-wrapper collapse in">
+              <div class="panel-body">
+                <!-- 스케줄 -->
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group data-custon-pick data-custom-mg mb20" id="data_5">
+                      <label class="b"><span class="ico_red"></span>타깃 오디언스 자동 생성</label>
+                      <div class="input-daterange input-group">
+                        <input type="checkbox" class="js-switch" data-color="#13dafe" data-size="small" id="auto_save_audience" name="auto_save_audience"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 타깃 오디언스 생성 방법 START -->
+                <div class="row mt40 auto-create-audi">
+                  <div class="col-lg-11">
+                    <label class="control-label b"><span class="ico_red"></span>타깃 오디언스 생성 방법을 선택하세요.</label>
+                  </div>
+                  
+                  <!-- 매체 선택 -->
+                  <div class="mk-chose">
+                    <ul class="sg-tabs1 col-md-12">
+                      <li class="tab-link current" data-tab="tab-1-1">
+                        <div class="col-lg-6 pl0">
+                          <div class="white-box list-group">
+                            <div class="radio radio-info">
+                              <input type="radio" name="save_type" id="save_type_create" value="create" checked>
+                              <label for="save_type_create">
+                                <p class="fl mr30"><img th:src="@{/img/tam-behave.svg}"></p>
+                                <div class="tl">
+                                  <h4 class="font16 b">새로운 타깃 오디언스 생성<span class="t-blue font14 ml5">오디언스 갱신</span></h4>
+                                  <p class="">오디언스 생성 주기(매일 오전 9시)에 맞춰 타깃 오디언스를 자동 업데이트합니다.</p>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="tab-link" data-tab="tab-2-1">
+                        <div class="col-lg-6">
+                          <div class="white-box list-group">
+                            <div class="radio radio-info">
+                              <input type="radio" name="save_type" id="save_type_append" value="append">
+                              <label for="save_type_append">
+                                <p class="fl mr30"><img th:src="@{/img/tam-unite.svg}"></p>
+                                <div class="tl">
+                                  <h4 class="font16 b">기존 타깃 오디언스 추가<span class="t-blue font14 ml5">오디언스 병합</span></h4>
+                                  <p class="font12">기존 저장된 타깃 오디언스에 신규 생성한 오디언스를 추가합니다.</p>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    
+                    <div id="tab-1-1" class="sg-tab-content1 current1">
+                      <div class="col-md-12">
+                        <div class="data-ep-table">
+                          <div class="form-group">
+                            <label for="audience_nm" class="b"><span class="ico_dark"></span> 타깃 오디언스명</label>
+                            <input type="text" class="form-control" id="audience_nm" name="audience_nm" placeholder="새로 생성할 타깃 오디언스명을 입력하세요.">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="tab-2-1" class="sg-tab-content1">
+                      <div class="col-md-12">
+                        <!-- data table -->
+                        <div class="data-ep-table">
+                          <div class="table-sglist">
+                            <label class="b fl mt10"><span class="ico_dark"></span> 기존 타깃오디언스 선택<span class="info-text">(신규 생성한 오디언스를 결합할 타깃 오디언스를 선택하세요.)</span></label>
+                            <table id="tbl_audience" class="display nowrap table table-hover table-striped" cellspacing="0" width="100%">
+                              <colgroup>
+                                <col width="10%">
+                                <col width="">
+                              </colgroup>
+                              <thead>
+                              <tr>
+                                <th>선택</th>
+                                <th>오디언스명</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr>
+                              </tr>
+                              <tr>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- /data table -->
+                      </div>
+                    </div>
+                  
+                  </div>
+                </div>
+                <!-- / 스케줄 -->
+              </div>
+            </div>
+          </div>
+        </form>
+        
+        <!-- 버튼 세트 -->
+        <div class="row mb20">
+          <div class="bd-t ml15 mr15"></div>
+          <div class="col-lg-6">
+            <div class="">
+              <button title="" class="pd-setting-ed btn btn-default" onclick="goBack();">목록으로 이동</button>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="tr">
+              <button title="" class="pd-setting-ed btn btn-default mr5" onclick="location.reload()">초기화</button>
+              <button title="" type="button" class="pd-setting-ed btn-main-bg btn btn-info" id="btn_seg_save"><i class="fa fa-check"></i> 저장</button>
+            </div>
+          </div>
+        </div>
+        <!-- /버튼 세트 -->
+      </div>
+      <!-- /col-9 -->
+      
+      <!-- col-3 -->
+      <div class="col-lg-3 side-panel pl20">
+      <!-- 세그먼트 잠재고객 수 -->
+        <div class="row">
+          <div class="col-lg-12">
+            <h4 class="box-title">Segment Preview <button type="button" class="popover_btn ico-info mt0" data-container="body" data-html="true" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="업데이트 버튼 클릭 시 좌측 패널에서 설정(Segment Definition)한 조건의 잠재 고객수를 확인할 수 있습니다." data-original-title="Segment Preview"><i class="fa fa-question-circle"></i></button>
+            <div class="fr"><button type="button" id="previewBtn" class="btn btn-xs pd-setting-ed btn btn-inverse">Update</button></h4>
+            <div class="panel panel-default filter-box">
+              <div class="panel-body panel-trait">
+                <div class="">
+                  <div class="sparkline11-graph">
+                    <div id="previewChart"></div>
+                  </div>
+                  <span class="gray-info-text">세그먼트 잠재 고객수 : <span id="prvTotal" class="b t-blue">0</span> /총 잠재 고객수 : <span id="allTotal" class="b">0</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- / 세그먼트 잠재고객 수 -->
+        <!-- 세그먼트 리스트 -->
+        <!--
+        <div class="row">
+          <div class="col-lg-12">
+            <h4 class="box-title">Copy Segment Definition<button type="button" class="popover_btn ico-info mt0" data-container="body" data-html="true" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="Copy Segment Definition는 기존에 저장된 세그먼트 목록으로 선택 시 기존에 저장된 세그먼트 내용(조건)을 불러올 수 있습니다." data-original-title="Copy Segment Definition"><i class="fa fa-question-circle"></i></button></h4>
+          </div>
+          <div class="col-lg-12">
+
+            <div class="fl col-md-6 pl0">
+              <button class="btn btn-default btn-sm btn-outline btn-primary" data-toggle="dropdown" href="#" aria-expanded="true"><i class="fa fa-filter font10 pr5"></i> Filter</button>
+              <div id="segmentFilterMenu" class="dropdown-menu" onclick="event.stopPropagation();">
+                <ul>
+                  <li><h4 class="box-title mt0">필터 선택</h4></li>
+                  <li>
+                    <p>작성자</p>
+                    <div class="form-group mb0">
+                      <select id="select_adm" class="select2 select2-multiple" multiple="multiple" style="width: 100%;"  placeholder="사용상태">
+                        <optgroup>
+                        </optgroup>
+                      </select>
+                    </div>
+                  </li>
+                  <li>
+                    <p>Tags</p>
+                    <div class="form-group mb0">
+                      <select id="select_tags" class="select2 select2-multiple" multiple="multiple" style="width: 100%;"  placeholder="사용상태">
+                        <optgroup>
+                        </optgroup>
+                      </select>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div id="copyTable" class="data-ep-table home-table">
+              <div class="table-sglist">
+                <table id="tbl-segment" class="myTable copyTable display nowrap table table-hover mt0 no-footer"  width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th class="tc">세그먼트 명</th>
+                      <th class="tc">생성일</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>-->
+      </div>
+      <!-- /col-3 -->
+    
+    </div>
+    <!-- /row -->
+    
+    <!-- ============================================================== -->
+    <!-- End Content -->
+    <!-- ============================================================== -->
+  </div>
+  <div th:replace="fragment/segment_behavioral :: segmentBehavioralInliningFragment"></div>
+  
+  <script th:src="@{/js/report/segment.js}"></script>
+  
+  <script th:inline="javascript">
+    window.onload = () => {
+      const behavioralApplication = new BehavioralApplication({requestFunc: sendAjax, requestRest: callRest});
+    }
+    
+    function BehavioralApplication({requestFunc, requestRest}) {
+      if (!new.target) {
+        throw new Error('Create object using new operator.');
+      }
+      /*
+      this.adminFilter = new AdminFilter({
+        filterId: 'select_adm',
+        requestRest: requestRest,
+        app: this
+      });
+
+      this.tagFilter = new TagFilter({
+        filterId: 'select_tags',
+        requestRest: requestRest,
+        app: this
+      });
+
+      this.behavioralTable = new BehavioralTable({
+        tableId: 'tbl-segment',
+        requestRest: requestRest
+      });
+      */
+      
+      this.setEvent = () => {
+      }
+      
+      this.init = () => {
+        //this.adminFilter.search();
+        //this.tagFilter.search();
+        //this.behavioralTable.search();
+	
+        this.setEvent();
+      }
+      this.init();
+    }
+    
+    /*
+    function AdminFilter({filterId, requestRest, app}) {
+      if (!new.target) {
+        throw new Error('Create object using new operator.');
+      }
+
+      this.target = document.querySelector(`#${ filterId }`);
+      this.$target = $(`#${filterId}`);
+      this.state = [];
+
+      this.setEvent = () => {
+        this.$target.on('change', (e) => {
+          app.behavioralTable.search();
+        })
+      }
+
+      this.setState = nextState => {
+        this.state = nextState;
+        this.render();
+      }
+
+      this.search = () => {
+        requestRest(
+          `${ cpHolder }/resource/segments`,
+          'GET',
+          {
+            client_seq: document.querySelector('#report_client_select').value,
+            segment_tp: 'behavioral'
+          },
+          (segmentData, param) => {
+            this.setState(segmentData.result.map(item => item.segmentOption));
+          }
+        )
+      }
+
+      this.render = () => {
+        let admins = [];
+
+        for (const segmentOption of this.state) {
+          const option = JSON.parse(segmentOption);
+          if (option.hasOwnProperty('admin_nm')) {
+            admins.push({text: option.admin_nm, value: option.admin_seq});
+          }
+        }
+
+        // 중복 제거
+        admins = Array.from([...new Set(admins.map(JSON.stringify))].map(JSON.parse));
+
+        this.$target.html(`
+          <option value="0">조직 전체</option>
+          ${
+          admins.map(node => `
+              <option value="${node.value}">${node.text}</option>
+            `)
+        }`);
+
+        this.setEvent();
+      }
+    }
+
+    function TagFilter({filterId, requestRest, app}) {
+      if (!new.target) {
+        throw new Error('Create object using new operator.');
+      }
+
+      this.target = document.querySelector(`#${ filterId }`);
+      this.$target = $(`#${filterId}`);
+      this.state = [];
+
+      this.setEvent = () => {
+        this.$target.on('change', (e) => {
+          app.behavioralTable.search();
+        })
+      }
+
+      this.setState = nextState => {
+        this.state = nextState;
+        this.render();
+      }
+
+      this.search = () => {
+        requestRest(
+          `${ cpHolder }/resource/segments`,
+          'GET',
+          {
+            client_seq: document.querySelector('#report_client_select').value,
+            segment_tp: 'behavioral'
+          },
+          (segmentData, param) => {
+            this.setState(segmentData.result.map(item => item.segmentOption));
+          }
+        )
+      }
+      
+      this.render = () => {
+        let tags = [];
+    
+        for (const segmentOption of this.state) {
+          const option = JSON.parse(segmentOption);
+          //console.log(option);
+          if (option.hasOwnProperty('hashtag')) {
+            for (const tag of option.hashtag.split(',')) {
+              if (tag) {
+                tags.push({text: tag, value: tag});
+              }
+            }
+          }
+        }
+
+        // 중복 제거
+        tags = Array.from([...new Set(tags.map(JSON.stringify))].map(JSON.parse));
+        this.$target.html(`
+          ${
+          tags.map(node => `
+              <option value="${node.value}">${node.text}</option>
+            `)
+        }`);
+
+        this.setEvent();
+      }
+    }
+
+    function BehavioralTable({tableId, requestRest}) {
+      if (!new.target) {
+        throw new Error('Create object using new operator.');
+      }
+
+      this.target = document.querySelector(`#${ tableId }`);
+      this.$target = $(`#${tableId}`);
+
+      this.state = [];
+      this.isFirst = true;
+
+      this.setState = nextState => {
+        this.state = nextState;
+        this.render();
+      }
+
+      this.setEvent = () => {
+      }
+
+      this.search = () => {
+        requestRest(
+          `${ cpHolder }/resource/segments`,
+          'GET',
+          {
+            client_seq: document.querySelector('#report_client_select').value,
+            admin_seq: $('#select_adm').val().join(),
+            hashtag: $('#select_tags').val().join(),
+            segment_tp: 'behavioral'
+          },
+          (data, param) => {
+            if (data.status === 'success') {
+              if (!data) {
+                this.setState([]);
+                return false;
+              }
+
+              this.setState(data.result);
+            } else {
+              alert('오류가 발생하였습니다. 오류: ' + data.result);
+            }
+          }
+        )
+      }
+
+      this.render = () => {
+        if ($.fn.DataTable.isDataTable(`#${tableId}`)) {
+          this.$target.DataTable().destroy();
+        }
+
+        this.$target.DataTable({
+          stateSave: true,
+          paging: this.state.length > 5 ? true : false,
+          pageLength: 5,
+          dom: 'ftip',
+          language: {
+            search: '<div class="input-group">_INPUT_<span class="input-group-addon"><i class="fa fa-search"></i></span></div>',
+            searchPlaceholder: '검색',
+            zeroRecords: '검색된 데이터가 없습니다.',
+            emptyTable: '데이터가 없습니다.'
+          },
+          buttons: [{
+            extend: 'excel',
+            text: 'Excel',
+            tag: 'a',
+            filename: 'behavioral table',
+            title: '',
+            className: 'dt-button buttons-excel buttons-html5 btn btn-sm ml0',
+            exportOptions: {
+              columns: [1, 2, 3, 4, 5, 6, 7, 8, 9 ,10]
+            }
+          }],
+          order: [1, 'desc'],
+          columns: [
+            {
+              // 세그먼트 명
+              className: 'tl',
+              render: (data, type, row) => `<td class="tl">
+                              <div class="copy-parent">
+                                <a href=""><span class="trait-ico"><img src="/gp/img/copy-segment.svg" alt=""></span> ${row.segmentNm}</a>
+                                <div class="copy-child">
+                                  <h4 class="box-title">google 첫 방문</h4>
+                                  <p class="pf-label">그로쓰플랫폼(growthplatform.ai), 로거(logger.co.kr), 애드몬스터(admonster.co.kr)</p>
+                                  <ul class="pf-cp">
+                                    <li>작성자 : 김제이</li>
+                                    <li class="tags-group cp"><span class="none">Tags : </span><span>최초방문</span><span>20대여성</span><span>구매</span><span>이틀 연속 방문한 고객</span><span>이탈</span><span>VIP</span><span>헤비유저</span><span>캠페인 유입</span><span>쿠폰 사용고객</span><span>네이버로 유입된 그룹</span></li>
+                                    <li>
+                                      <div class="row">
+                                        <p class="col-xs-6 b">잠재고객 수</p>
+                                        <p class="tr col-xs-6 b t-blue">1,122 <span class="t-gray fw400">/ 832K</span></p>
+                                      </div>
+                                      <div class="percentage-parent">
+                                        <div class="percentage-child" style="width: 67%;">
+                                          <div class="percentage-rate">67%</div>
+                                        </div>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                  <ul class="pr-cp">
+                                    <li>LTV 방문 횟수 상위 5%</li>
+                                    <li><label for="">AND</label></li>
+                                    <li>LTV 평균 구매 간격 상위 5%</li>
+                                    <li class="row condition-st or"><label for="">OR</label></li>
+                                    <li>여성</li>
+                                    <li><label for="">AND</label></li>
+                                    <li>10대, 20대, 30대</li>
+                                    <li><label for="">AND</label></li>
+                                    <li>처음 방문 여부, 재활성화 여부, 캠페인 반응 여부</li>
+                                    <li><label for="">AND</label></li>
+                                    <li>iOS, Galaxy</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </td>`
+            },
+            {
+              // 생성일
+              className: 'tc',
+              render: (data, type, row) => dateTimeFormat(row.regDt).slice(0, 10)
+            }
+          ],
+          data: this.state,
+          destroy: true,
+          initComplete: () => this.isFirst && this.setEvent()
+        });
+
+        this.isFirst = false;
+      }
+    }
+    */
+  </script>
+  
+  <script th:inline="javascript">
+    $(document).ready(function () {
+      $('#page-wrapper').addClass('body-gray home segment-build');
+
+      const chart = c3.generate({
+        bindto: '#previewChart',
+        data: {
+          columns: [
+            ['data', 0]
+          ],
+         type: 'gauge',
+        },
+        gauge: {
+          min: 0,
+          max: 100
+        }
+      });
+      
+      // filter 스타일 변경
+      // document.querySelectorAll('.fs-label-wrap').forEach(item => item.className = 'form-dropdown');
+      // document.querySelectorAll('.fs-label').forEach(item => item.className = 'fs-label label-h');
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const dupSeq = urlParams.get('dup_seq');
+      if (dupSeq) {
+        segmentDup(dupSeq);
+        $("#sel_segment_temp").val(dupSeq);
+        $("#segment_nm").val($("#sel_segment_temp option:checked").text() + " (복사본)");
+      }
+      
+      $("#sel_segment_temp").on("change", function () {
+        if ($(this).val()) {
+          segmentDup($(this).val());
+        } else {
+          const html = `  <div class="panel panel-default seg-group">
+                <div class="panel-heading" role="tab">
+                  <div class="">
+                    <div class="panel-title">
+                      <h4 class="panel-title b">세그먼트 설정 1</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-collapse collapse in query-builder-line" role="tabpanel" aria-labelledby="">
+                  <div class="panel-body">
+                    <div class="query-builder">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row add mt20 mb20" id="dvAddRule">
+                <div class="add-rule set">
+                  <div class="col-lg-12 col-md-12">
+                    <button id="addSegGroup">+ Add Group</button>
+                  </div>
+                </div>
+              </div>`;
+          $("#dvTabList").html(html);
+          getSegmentAttr("new", $(".query-builder:first"))
+        }
+      });
+      
+      $(document).on('keyup', '.live-search', function (e) {
+        const kw = $(e.currentTarget).val();
+        const segments = $(e.currentTarget).parents('.depth2-seg-menu').find('.sel-seg-option');
+        segments.each(function () {
+          const segment = $(this);
+          const segNm = segment.data('seg-nm').toLowerCase();
+          
+          if (segNm.includes(kw.toLowerCase())) {
+            segment.show();
+          } else {
+            segment.hide();
+          }
+        })
+      });
+
+      $("#previewBtn").on("click", function () {
+        const lookback = $('#select_lookback').val();
+        const groupTitle = $('.group-title').text();
+
+        if (lookback === null) {
+          alert('데이터 범위를 선택해 주세요.');
+          document.getElementById('select_lookback').focus();
+          return;
+        }
+        
+        if (groupTitle.includes('데이터 항목 선택')) {
+          alert('Segment Definition 데이터 항목을 선택해 주세요.');
+          //document.getElementById('panel-trait').focus();
+          return;
+        }
+
+        $('#divLoading').show();
+        let sendData = $("#segmentForm").serializeArray();
+
+        if (!$("#fs-selectAll-check").hasClass("selected")) {
+          sendData.push({name: 'pfnos', value: $('#select_profile').val()});
+        }
+
+        sendData = convertOperType(sendData);
+        sendData = convertDateAndLookback(sendData);
+        sendData = convertComposite(sendData);
+
+        const callback = function (data) {
+          //set preview chart
+          chart.load({
+            columns: [
+              ['data', makeToPercentageDigitsString(data.target / data.total, 2, '')]
+            ]
+          });
+          $('#prvTotal').text(makeToLimitDigitsString(data.target));
+          $('#allTotal').text(makeToLimitDigitsString(data.total));
+          
+          $('#divLoading').hide();
+        }
+        sendAjax(cpHolder + "/2000/segment/preview", sendData, callback);
+      });
+
+      $("#btn_seg_save").on("click", function () {
+        const segmentNm = $("#segment_nm").val();
+        const profiles = $('#select_profile').val();
+        const lookback = $('#select_lookback').val();
+        const groupTitle = $('.group-title').text();
+        let profileNmArr = [];
+        $.each($('#select_profile').find("option:checked"), function(index, item){ 
+          profileNmArr.push ( item.text );
+        });
+        
+        if (!segmentNm) {
+          swal("세그먼트명을 입력해 주세요.");
+          document.getElementById('segment_nm').focus();
+          return false;
+        }
+        
+        if (profiles.length <= 0) {
+          swal("프로파일을 선택해 주세요.");
+          document.getElementById('select_profile').focus();
+          return false;
+        }
+        
+        if (lookback === null) {
+          alert('데이터 범위를 선택해 주세요.');
+          document.getElementById('select_lookback').focus();
+          return;
+        }
+        
+        if (groupTitle.includes('데이터 항목 선택')) {
+          alert('Segment Definition 데이터 항목을 선택해 주세요.');
+          //document.getElementById('panel-trait').focus();
+          return;
+        }
+        
+        const saveType = $('input[name=save_type]:checked').val();
+        if ($('#auto_save_audience').is(':checked')) {
+          if (saveType === 'create' && !$('#audience_nm').val()) {
+            swal('오디언스명을 입력해 주세요.');
+            return false;
+          } else if (saveType === 'append' && !$('input[name=audience_tag]').is(':checked')) {
+            swal('타깃 오디언스를 선택해 주세요.');
+            return false;
+          }
+        }
+        
+        let sendData = $("form").serializeArray();
+
+        if (!$("#fs-selectAll-check").hasClass("selected")) {
+          sendData.push({name: 'pfnos', value: profiles});
+          sendData.push({name: 'profiles', value: profileNmArr});
+        }
+
+        sendData = convertOperType(sendData);
+        sendData = convertDateAndLookback(sendData);
+        sendData = convertComposite(sendData);
+
+        const callback = function (data) {
+          if (data && data.msg === 'success') {
+            swal({
+              title: "세그먼트가 저장되었습니다!",
+              text: "저장된 세그먼트는 목록에서 확인할 수 있습니다.",
+              type: "success",
+              confirmButtonColor: "#41b3f9",
+              closeOnConfirm: false
+            }).then(function () {
+              window.location.href = cpHolder + "/2000/2000001";
+            });
+          } else {
+            const msg = data.msg.split('#_#')[1];
+            swal({
+              title: "세그먼트 저장에 실패하였습니다.",
+              text: "에러가 발생하였습니다. 관리자에게 문의 바랍니다." + msg,
+              type: "error"
+            })
+          }
+        }
+        sendAjax(cpHolder + "/2000/segment/save", sendData, callback);
+      });
+    });
+    
+    $(document).ready(function () {
+      $('.input-daterange-datepicker').daterangepicker({
+        locale: {
+          format: 'YYYY-MM-DD',
+          applyLabel: '적용',
+          cancelLabel: '취소'
+        },
+        ranges: {
+          '어제': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          '최근 1주일': [moment().subtract(7, 'days'), moment().subtract(1, 'days')],
+          '최근 2주일': [moment().subtract(14, 'days'), moment().subtract(1, 'days')],
+          '최근 4주일': [moment().subtract(28, 'days'), moment().subtract(1, 'days')]
+        },
+        linkedCalendars: false,
+        showCustomRangeLabel: false,
+        alwaysShowCalendars: true,
+        autoApply: false,
+        minDate: false,
+        maxDate: moment(moment().subtract(1, 'days')),
+        startDate: moment(moment().subtract(15, 'days')),
+        endDate: moment(moment().subtract(1, 'days')),
+        opens: 'left'
+      });
+    });
+    
+    function convertOperType(sendData) {
+      const regex = /\b(sg_).*(input[0-9]+)/;    // sg_*_input{n}
+      let _sendData = _.clone(sendData);
+      let operArrays = [];
+      const opers = _sendData.filter(data => regex.test(data.name));
+      for (const oper of opers) {
+        const operNm = oper.name.substring(0, oper.name.indexOf('_input'));
+        const operVal = oper.value;
+        const dataNode = operArrays.find((node) => node.name === operNm);
+        if (dataNode) {
+          if (operNm.endsWith('value')) {
+            dataNode.value = dataNode.value + ',' + operVal;
+          } else if (operNm.endsWith('oper')) {
+            dataNode.value = dataNode.value + operVal.substring(operVal.lastIndexOf('_'), operVal.length);
+          }
+        } else {
+          const nData = {name: operNm, value: operVal};
+          operArrays.push(nData);
+        }
+        
+        _sendData = _sendData.filter(data => data.name !== oper.name);
+      }
+      _sendData = _sendData.concat(operArrays);
+      return _sendData;
+    }
+    
+    function convertDateAndLookback(sendData) {
+      let _sendData = _.clone(sendData);
+      const lookback = $('#select_lookback').val();
+      
+      //set repeat_type, lookback
+      _sendData.push({name: 'repeat_type', value: 'repeat'}, {name: 'lookback', value: lookback});
+      
+      return _sendData;
+    }
+    
+    function convertComposite(sendData) {
+      const regex = /\b(sg_).*(_value_temp)/;    // sg_*_value_temp
+      let _sendData = _.clone(sendData);
+      
+      let temp = _sendData.filter(data => regex.test(data.name));
+      temp.forEach((row) => {
+        const name = row.name;
+        const nameArr = name.split('_');
+        const groupIdx = nameArr[1];
+        const elemIdx = nameArr[2];
+        
+        const oper = _sendData.filter(data => data.name.startsWith('sg_' + groupIdx + '_' + elemIdx) && data.name.endsWith('_oper_temp'))[0].value;
+        const value = row.value;
+        const valueArr = value.split(',');
+        
+        // split values
+        const segArrays = [];
+        valueArr.forEach((row) => {
+          const rowArr = row.split([[ ${T(kr.co.bizspring.gp.report.common.ReportProperty).RK_DELIM_KEY}]]);
+          const seg = rowArr[0];
+          const value = rowArr[1];
+          
+          const dataNode = segArrays.find((node) => node.seg === seg);
+          if (dataNode) {
+            dataNode.value += ',' + value;
+          } else {
+            segArrays.push({seg: seg, oper: oper, value: value});
+          }
+        });
+        
+        // get last elemIdx by group
+        let maxElemIdx = elemIdx;
+        _sendData.filter(data => data.name.startsWith('sg_' + groupIdx)).forEach((row) => {
+          const nameArr = row.name.split('_');
+          const elemIdx = nameArr[2];
+          
+          if (elemIdx > maxElemIdx) {
+            maxElemIdx = elemIdx;
+          }
+        });
+        
+        // remove original sg_
+        _sendData = _sendData.filter(data => !data.name.startsWith('sg_' + groupIdx + '_' + elemIdx));
+        segArrays.forEach((row) => {
+          const prefix = 'sg_' + groupIdx + '_' + Number(++maxElemIdx) + '_';
+          const segNm = prefix + '_seg';
+          const operNm = prefix + '_oper';
+          const valueNm = prefix + '_value';
+          
+          _sendData.push({name: segNm, value: row.seg}, {name: operNm, value: row.oper}, {name: valueNm, value: row.value});
+        })
+      })
+      return _sendData;
+    }
+    
+    function segmentDup(_seq) {
+      $.ajax({
+        url: cpHolder + "/2000/2000001/copy",
+        type: "POST",
+        dataType: "html",
+        data: {dup_seq: _seq},
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        success: function (fragment) {
+          $("#dvTabList").html(fragment);
+          segNumIdx = $(".sel-seg-option").length;
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
