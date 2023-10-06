@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
+import ECharts from "echarts-for-react";
 
 const AudienceDetailModal = () => {
 
     const [audienceDetail, setAudienceDetail] = useState([]);
     const [audiencePage, setAudiencePage] = useState([]);
+    const [audienceChart, setAudienceChart] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // This effect will run once when the component mounts
         fetchAudienceUserDetail();
         fetchAudienceUserPage();
+        fetchAudienceUserChart();
     }, []); // Provide an empty dependency array
 
     const fetchAudienceUserDetail = async () => {
             const clientSeq = 106659;
-            const dpuid = 'dQkgV32l2s4yi9we9Beux4dvxezdFmDTcY971bs4';
+            const dpuid = 'cb67320ca26fd0911cc9db4ac484449eee0052dd';
         const response = await fetch(`https://api.logger.co.kr/tam-audience/user-detail?clientSeq=${clientSeq}&dpuid=${dpuid}`)
         .then((response) => response.json());
 
@@ -30,15 +33,175 @@ const AudienceDetailModal = () => {
 
     const fetchAudienceUserPage = async () => {
         const clientSeq = 106659;
-        const dpuid = 'dQkgV32l2s4yi9we9Beux4dvxezdFmDTcY971bs4';
+        const dpuid = 'cb67320ca26fd0911cc9db4ac484449eee0052dd';
         const response = await fetch(`https://api.logger.co.kr/tam-audience/user-page?clientSeq=${clientSeq}&dpuid=${dpuid}`)
         .then((response) => response.json());
 
         setAudiencePage(response.data);
     }
 
+    const [chartPvUv, setChartPvUv] = useState();
+    const [chartOrdRvn, setChartOrdRvn] = useState();
 
+    const fetchAudienceUserChart = async () => {
+        const clientSeq = 106659;
+        const dpuid = 'cb67320ca26fd0911cc9db4ac484449eee0052dd';
+      
+        try {
+          const response = await fetch(
+            `https://api.logger.co.kr/tam-audience/user-chart?clientSeq=${clientSeq}&dpuid=${dpuid}`
+          );
+      
+          if (response.ok) {
+            const data = await response.json();
+            setAudienceChart(data.data);
 
+            // Initialize chartPvUv here with the fetched data
+            let chartPvUv = {
+                tooltip: {
+                    trigger: "axis",
+                    axisPointer: {
+                    type: "cross",
+                    },
+                },
+                legend: {
+                    data: chartPvUvCat,
+                    bottom: "bottom",
+                    icon: "circle",
+                    itemGap: 25,
+                },
+                xAxis: [
+                    {
+                    type: 'category',
+                    axisTick: {
+                        alignWithLabel: true,
+                    },
+                    data: data.data.map(item => item.stat_date),
+                    },
+                ],
+                yAxis: [
+                    {
+                    type: "value",
+                    name: chartPvUvCat[0],
+                    alignTicks: true,
+                    axisLine: {
+                        show: true,
+                    },
+                    },
+                    {
+                    type: "value",
+                    name: chartPvUvCat[1],
+                    alignTicks: true,
+                    axisLine: {
+                        show: true,
+                    },
+                    },
+                ],
+                series: [
+                    {
+                    name: chartPvUvCat[0],
+                    type: "bar",
+                    data: data.data.map(item => item.pv),
+                    smooth: true,
+                    },
+                    {
+                    name: chartPvUvCat[1],
+                    type: "line",
+                    yAxisIndex: 1,
+                    data: data.data.map(item => item.uv),
+                    symbol: "circle",
+                    symbolSize: 6,
+                    },
+                ],
+            };
+
+            let chartOrdRvn = {
+                tooltip: {
+                    trigger: "axis",
+                    axisPointer: {
+                    type: "cross",
+                    },
+                },
+                legend: {
+                    data: chartOrdRvnCat,
+                    bottom: "bottom",
+                    icon: "circle",
+                    itemGap: 25,
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        axisTick: {
+                            alignWithLabel: true,
+                        },
+                        data: data.data.map(item => item.stat_date),
+                    },
+                ],
+                yAxis: [
+                    {
+                        type: "value",
+                        name: chartOrdRvnCat[0],
+                        alignTicks: true,
+                        axisLine: {
+                            show: true,
+                        },
+                    },
+                    {
+                        type: "value",
+                        name: chartOrdRvnCat[1],
+                        alignTicks: true,
+                        axisLine: {
+                        show: true,
+                        },
+                    },
+                ],
+                series: [
+                    {
+                        name: chartOrdRvnCat[0],
+                        type: "bar",
+                        data: data.data.map(item => item.ord),
+                        smooth: true,
+                    },
+                    {
+                        name: chartOrdRvnCat[1],
+                        type: "line",
+                        yAxisIndex: 1,
+                        data: data.data.map(item => item.rvn),
+                        symbol: "circle",
+                        symbolSize: 6,
+                    },
+                ],
+            }
+      
+            // Set chartPvUv state with the newly initialized object
+            setChartPvUv(chartPvUv);
+            setChartOrdRvn(chartOrdRvn);
+          } else {
+            console.log('fetching error');
+          }
+        } catch (error) {
+          console.log('fetching error', error);
+        }
+      };
+
+    const chartPvUvCat = ["페이지수", "사용자수"];
+    const chartOrdRvnCat = ["주문수", "주문금액"];
+
+    const itemsPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Calculate the indexes for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = audiencePage.slice(startIndex, endIndex);
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(audiencePage.length / itemsPerPage);
+
+    // Function to handle page changes
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
 
     return (
         // <!-- 오디언스 상세 modal -->
@@ -53,17 +216,21 @@ const AudienceDetailModal = () => {
 				<div class="modal-body">
 					
 					<div>
-						<h4 class="b fl">UID123<small>Last Update : 2023-09-04 13:42</small></h4>
+                        {audienceDetail=="" ? (
+                            <h4 class="b fl">UID123<small>Not available</small></h4>
+                        ) : (
+                            <h4 class="b fl">UID123<small>Last Update : {audienceDetail[0].last_update!="" ? audienceDetail[0].last_update: '-'}</small></h4>
+                        )}
 						<div class="fr mt10"><span class="label label-success label-rouded"><i class="ti-face-smile"></i> 상위 10%</span> <span class="label label-warning label-rouded"><i class="ti-face-smile"></i> 상위 50%</span> <span class="label label-danger label-rouded"><i class="ti-face-sad"></i> 상위 90%</span></div>
-						{isLoading ? (
+						{audienceDetail=="" ? (
                             <p>Loading...</p>
                         ) : (
-                            <table class="user_th">
+                            <table class="user_th" style={{border:'1px solid'}}>
 							<tr>
 								<th>이름</th>
 								<td>**아직없음**</td>
 								<th>성별</th>
-								<td>{audienceDetail ? audienceDetail[0].sex : '--'}</td>								
+								<td>{audienceDetail[0].sex!="" ? audienceDetail[0].sex : '-'}</td>								
 							</tr>
 							<tr>
 								<th>이메일</th>
@@ -73,19 +240,19 @@ const AudienceDetailModal = () => {
 							</tr>
 							<tr>
 								<th>디바이스</th>
-								<td>{audienceDetail ? audienceDetail[0].device : '--'}</td>
+								<td>{audienceDetail[0].device!="" ? audienceDetail[0].device : '-'}</td>
 								<th>지역</th>
-								<td>{audienceDetail ? audienceDetail[0].region : '--'}</td>
+								<td>{audienceDetail[0].region!="" ? audienceDetail[0].region : '-'}</td>
 							</tr>
 							<tr>
 								<th>최근 반응한 캠페인</th>
 								<td>**아직없음**</td>
 								<th>최근 주문일</th>
-								<td>{audienceDetail ? audienceDetail[0].last_order : '--'}</td>
+								<td>{audienceDetail[0].last_order!="" ? audienceDetail[0].last_order : '-'}</td>
 							</tr>
 							<tr>
 								<th>마지막 방문일</th>
-								<td>{audienceDetail ? audienceDetail[0].last_visit : '--'}</td>
+								<td>{audienceDetail[0].last_visit!="" ? audienceDetail[0].last_visit : '-'}</td>
 								<th>마지막 광고 유입매체</th>
 								<td>**아직없음**</td>
 							</tr>
@@ -93,19 +260,34 @@ const AudienceDetailModal = () => {
 							</tr>
 							<tr>
 								<th class="bd-b">누적 방문횟수</th>
-								<td class="bd-b">{audienceDetail ? audienceDetail[0].ltv_visit : '--'}</td>
+								<td class="bd-b">{audienceDetail[0].ltv_visit!="" ? audienceDetail[0].ltv_visit : '-'}</td>
 								<th class="bd-b">누적 주문횟수</th>
-								<td class="bd-b">{audienceDetail ? audienceDetail[0].ltv_order: '--'}</td>
+								<td class="bd-b">{audienceDetail[0].ltv_order!="" ? audienceDetail[0].ltv_order: '-'}</td>
 							</tr>
 						</table>
                         )}
 					</div>
 
 
-					<div class="chat-discussion mt20" style={{height: "auto"}}>
+					{/* <div class="chat-discussion mt20" style={{height: "auto"}}>
 						<div id="myChart11" class="chart--container"  style={{minHeight:"350px;"}}></div>
-					</div>
-
+					</div> */}
+                    {audienceChart.length > 0 ? (
+                        <>
+                            <div>
+                                <ECharts
+                                    option={chartPvUv}
+                                />
+                            </div>
+                            <div>
+                            <ECharts
+                                option={chartOrdRvn}
+                            />
+                            </div>
+                        </>
+                    ) : (
+                        <p>차트 로딩중...</p>
+                    )}
 
 				  {/* <!-- user_view --> */}
 					<div class="inbox-body">
@@ -119,7 +301,7 @@ const AudienceDetailModal = () => {
 					  <div class="col-lg-12">
 						<div class="data-ep-table mb30">
 							<div class="table-stlist">							
-								<table class="table table-bordered table-striped" cellspacing="0" width="100%">
+								<table class="table table-bordered table-striped" cellspacing="0" width="100%" style={{border:'1px solid'}}>
 									<thead>
 										<tr>
 											<th>조회 일자</th>
@@ -133,70 +315,41 @@ const AudienceDetailModal = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{/* <tr>
-											<td class="tc bg-green">2023-09-02</td>
-											<td class="tc">12:10:06</td>
-											<td>101초</td>
-											<td class="tl">로그인 화면</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>		
-											<td class="tl">-</td>	
-										</tr>
-										<tr>
-											<td class="tc">2023-09-02</td>
-											<td class="tc">11:11:11</td>
-											<td>32초</td>
-											<td class="tl">로그인 화면</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>		
-											<td class="tl">-</td>	
-										</tr>
-										<tr>
-											<td class="tc bg-green">2023-09-01</td>
-											<td class="tc">14:10:06</td>
-											<td>101초</td>
-											<td class="tl">로그인 화면</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>		
-											<td class="tl">-</td>	
-										</tr>
-										<tr>
-											<td class="tc">2023-09-01</td>
-											<td class="tc">14:08:30</td>
-											<td>96초</td>
-											<td class="tl">로그인 화면</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>		
-											<td class="tl">-</td>	
-										</tr>
-										<tr>
-											<td class="tc">2023-09-01</td>
-											<td class="tc"><span class="bg-blue">14:07:36</span></td>
-											<td>54초</td>
-											<td class="tl">로그인 화면</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>
-											<td class="tl">-</td>	
-											<td class="tl">-</td>	
-										</tr> */}
-                                        {audiencePage.map((page, index) => (
+                                        {currentData.map((page, index) => (
                                             <tr key={index}>
-                                                <td class="tc">{page.view_date}</td>
-                                                <td class="tc">{page.view_time}</td>
-                                                <td class="tl">{page.dp}</td>
-                                                <td>{page.vs}</td>
-                                                <td class="tl">{page.cp}</td>
-                                                <td class="tl">{page.mf}</td>
-                                                <td class="tl">{page.op}</td>
-                                                <td class="tl">{page.kw_inner}</td>
+                                                <td class="tc">{page.view_date!="" && page.view_date!=null ? page.view_date : '-'}</td>
+                                                <td class="tc">{page.view_time!="" && page.view_time!=null ? page.view_time : '-'}</td>
+                                                <td class="tl">{page.dp!="" && page.dp!=null ? page.dp : '-'}</td>
+                                                <td>{page.vs!="" && page.vs!=null ? page.vs : '-'}</td>
+                                                <td class="tl">{page.cp!="" && page.cp!=null ? page.cp : '-'}</td>
+                                                <td class="tl">{page.mf!="" && page.mf!=null ? page.mf : '-'}</td>
+                                                <td class="tl">{page.op!="" && page.op!=null ? page.op : '-'}</td>
+                                                <td class="tl">{page.kw_inner!="" && page.op!=null ? page.kw_inner : '-'}</td>
                                             </tr>
                                         ))}
 									</tbody>
 								</table>
+                                {audiencePage.data!= null ? (
+                                    <div className="pagination">
+                                        <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage == 1}
+                                        >
+                                        Previous
+                                        </button>
+                                        <span>
+                                        Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage == totalPages}
+                                        >
+                                        Next
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div></div>
+                                )}
 							</div>
 						</div>
 						{/* <!-- /data table --> */}

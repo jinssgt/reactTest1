@@ -30,20 +30,29 @@ import Popup from 'reactjs-popup'
 import Cookies from 'js-cookie';
 import { Link } from "react-router-dom";
 import LoginModal from './loginModal';
+import MyAccountModal from './myAccountModal';
 import {SIGN_IN, FETCH_MENU_APPS, FETCH_NOTICES, FETCH_ABOUT_ME, FETCH_CLIENT} from './gnb_lnb_api';
 const { Header, Sider, Content } = Layout;
 
-const Gnb = ({onValueChange, updateClientData, updateLnbMenu}) => {
+const Gnb = ({onValueChange, updateClientData, updateLnbMenu, openLoginModal}) => {
 
-  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isMyAccountModalOpen, setIsMyAccountModalOpen] = useState(false);
 
-  const openLoginModal = () => {
-    setLoginModalVisible(true);
-    console.log('modal visible?', isLoginModalVisible);
+  const handleOpenLoginModal = () => {
+    setIsLoginModalOpen(true);
+    console.log('modal visible?', isLoginModalOpen);
+    // openLoginModal();
+    console.log('handleOpenLoginModal run');
   };
 
+  const handleOpenMyAccountModal = () => {
+    setIsMyAccountModalOpen(true);
+  }
+
   const handleOk = () => {
-    setLoginModalVisible(false);
+    setIsLoginModalOpen(false);
+    setIsMyAccountModalOpen(false);
   };
 
   const [gnbItems, setGnbItems] = useState([])
@@ -57,7 +66,7 @@ const Gnb = ({onValueChange, updateClientData, updateLnbMenu}) => {
     useEffect(() => {
       loginTest();
       console.log('about me data load', aboutMeData);
-      console.log('login modal initial visibility', isLoginModalVisible);
+      console.log('login modal initial visibility', isLoginModalOpen);
     }, []);
 
     const loginTest = () => {
@@ -456,7 +465,7 @@ const Gnb = ({onValueChange, updateClientData, updateLnbMenu}) => {
                 // <Menu>{menuAppsProcessed}</Menu>
                 token ? (
                 <Menu style={{width:'200px'}}>
-                  <Menu.Item>
+                  <Menu.Item onClick={handleOpenMyAccountModal}>
                     <p>My Account</p>
                   </Menu.Item>
                   <Menu.Divider />
@@ -466,7 +475,7 @@ const Gnb = ({onValueChange, updateClientData, updateLnbMenu}) => {
                 </Menu>
                 ) : (
                   <Menu style={{width:'200px'}}>
-                    <Menu.Item onClick={openLoginModal}>
+                    <Menu.Item onClick={handleOpenLoginModal}>
                       Log In
                     </Menu.Item>
                   </Menu>
@@ -504,7 +513,8 @@ const Gnb = ({onValueChange, updateClientData, updateLnbMenu}) => {
             </div>
           </Popup>
         </Header>
-        <LoginModal isLoginModalVisible={isLoginModalVisible} handleOk={handleOk} />
+        <LoginModal isModalOpen={isLoginModalOpen} handleOk={handleOk} />
+        <MyAccountModal isModalOpen={isMyAccountModalOpen} handleOk={handleOk} />
       </>
     )
 };
